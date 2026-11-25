@@ -3,6 +3,7 @@
 import Lenis from "lenis";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
+import { ConfirmHost } from "./confirm";
 
 function SmoothScroll() {
   useEffect(() => {
@@ -26,6 +27,7 @@ export function Providers() {
   return (
     <>
       <SmoothScroll />
+      <ConfirmHost />
       <Toaster
         position="top-center"
         toastOptions={{
