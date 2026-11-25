@@ -99,7 +99,9 @@ test.describe("admin", () => {
     await page.getByTestId("range-switch").getByRole("link", { name: "7 days" }).click();
     await expect(page).toHaveURL(/range=7/);
 
-    // Orders: phone search (local format), CSV with filter
+    // Orders: phone search (local format), CSV with filter. Own order, so it never relies on leftovers.
+    await sql`insert into "order" (number, email, phone, name, method, status, subtotal_kobo, total_kobo, payment_expires_at, paid_at)
+      values (${`MB-E2E-${uid()}`}, ${e2eEmail("search")}, '+2348031234567', 'Search Test', 'pickup', 'confirmed', 1200000, 1200000, now() + interval '1 hour', now())`;
     await page.goto("/admin/orders?q=0803%20123");
     const rows = await page.locator("[data-testid=order-row]:visible").count();
     expect(rows).toBeGreaterThan(0);

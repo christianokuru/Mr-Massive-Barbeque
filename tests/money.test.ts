@@ -187,6 +187,50 @@ describe("coupons and referrals", () => {
     expect(q2.discountError).toMatch(/first order/);
   });
 
+  it("lets only the referrer spend their reward code, once", async () => {
+    const { variant } = await makeProduct({ stock: 20, priceNaira: 10000 });
+    const referrer = await makeUser(testEmail("referrer2"));
+    await db.insert(s.referralCode).values({ userId: referrer.id, code: "VTREF-5678" });
+    const f = await cartLinesFor([{ variantId: variant.id, qty: 1 }]);
+    const { order, reference } = await createOrder(checkoutInput(f.lines, testEmail("friend2"), { code: "VTREF-5678" }));
+    await settlePayment(reference, ok(reference, order.totalKobo));
+    const [rr] = await db.select().from(s.referralReward).where(eq(s.referralReward.referrerUserId, referrer.id));
+    const [reward] = await db.select().from(s.coupon).where(eq(s.coupon.id, rr.rewardCouponId!));
+    expect(reward.code).toMatch(/^THANKS-/);
+
+    // Someone else can't use it.
+    const other = await cartLinesFor([{ variantId: variant.id, qty: 1 }]);
+    const q = await quote({ lines: other.lines, method: "pickup", code: reward.code, email: testEmail("stranger") });
+    expect(q.discountError).toMatch(/another account/);
+
+    // The referrer can, for ₦2,000 off, and only once.
+    const mine = await cartLinesFor([{ variantId: variant.id, qty: 1 }]);
+    const used = await createOrder(checkoutInput(mine.lines, referrer.email, { code: reward.code, userId: referrer.id }));
+    expect(used.order.discountKobo).toBe(2000_00);
+    const again = await cartLinesFor([{ variantId: variant.id, qty: 1 }]);
+    await expect(createOrder(checkoutInput(again.lines, referrer.email, { code: reward.code, userId: referrer.id }))).rejects.toThrow(/already used|fully used/);
+  });
+
+  it("welcome code works on a first order only; bad, inactive and expired codes are refused", async () => {
+    const { variant } = await makeProduct({ stock: 20, priceNaira: 10000 });
+    await db.insert(s.coupon).values([
+      { code: "VTWELCOME", kind: "percent", value: 10, source: "welcome" },
+      { code: "VTOFF", kind: "fixed", value: 500_00, active: false },
+      { code: "VTOLD", kind: "fixed", value: 500_00, endsAt: new Date(Date.now() - 86400_000) },
+    ]);
+    const lines = (await cartLinesFor([{ variantId: variant.id, qty: 1 }])).lines;
+    const newbie = testEmail("newbie");
+    expect((await quote({ lines, method: "pickup", code: "vtwelcome", email: newbie })).discountKobo).toBe(1000_00);
+    expect((await quote({ lines, method: "pickup", code: "VTOFF", email: newbie })).discountError).toMatch(/no longer active/);
+    expect((await quote({ lines, method: "pickup", code: "VTOLD", email: newbie })).discountError).toMatch(/expired/);
+    expect((await quote({ lines, method: "pickup", code: "NOPE-0000", email: newbie })).discountError).toMatch(/isn't valid/);
+
+    // After a paid order, the welcome code is refused.
+    const { order, reference } = await createOrder(checkoutInput(lines, newbie));
+    await settlePayment(reference, ok(reference, order.totalKobo));
+    expect((await quote({ lines, method: "pickup", code: "VTWELCOME", email: newbie })).discountError).toMatch(/first order/);
+  });
+
   it("computes delivery and free-delivery server-side", async () => {
     const { variant } = await makeProduct({ stock: 50, priceNaira: 10000 });
     const [zone] = await db.select().from(s.shippingZone).where(sql`${s.shippingZone.freeOverKobo} is not null`).limit(1);

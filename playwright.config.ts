@@ -13,6 +13,7 @@ export const E2E_ADMIN = process.env.E2E_ADMIN_EMAIL ?? "admin-e2e@example.com";
 
 export default defineConfig({
   testDir: "./e2e",
+  globalTeardown: "./e2e/teardown.ts",
   fullyParallel: false,
   workers: 1,
   retries: 0,
