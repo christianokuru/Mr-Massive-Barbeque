@@ -11,6 +11,7 @@ import { formatNaira } from "@/lib/money";
 import { REVENUE_STATUSES, type OrderStatus } from "@/lib/order-status";
 import { normalizeWhatsapp } from "@/lib/validation";
 import { latestQuiz, listMyOrders } from "@/server/account";
+import { customerFavourites } from "@/server/admin";
 import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Customer" };
@@ -23,11 +24,12 @@ export default async function Customer({ params }: PageProps<"/admin/customers/[
   const { id } = await params;
   const [u] = await db.select().from(s.user).where(eq(s.user.id, id));
   if (!u) notFound();
-  const [orders, addresses, [profile], quiz] = await Promise.all([
+  const [orders, addresses, [profile], quiz, favs] = await Promise.all([
     listMyOrders(u.id, u.email, 100),
     db.select().from(s.address).where(eq(s.address.userId, u.id)),
     db.select().from(s.profile).where(eq(s.profile.userId, u.id)),
     latestQuiz(u.id, u.email),
+    customerFavourites(u.id, u.email),
   ]);
   const paid = orders.filter((o) => (REVENUE_STATUSES as readonly string[]).includes(o.status));
   const spent = paid.reduce((sum, o) => sum + o.totalKobo, 0);
@@ -38,7 +40,7 @@ export default async function Customer({ params }: PageProps<"/admin/customers/[
       <Link href="/admin/customers" className="inline-flex w-fit items-center gap-1 text-sm font-bold"><ChevronLeft className="size-4" /> Customers</Link>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-[36px] leading-none md:text-heading-lg">{u.name}</h1>
+          <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">{u.name}</h1>
           <p className="mt-2 text-muted-foreground">{u.email}{phone ? ` · ${phone}` : ""} · joined {formatDate(u.createdAt)}</p>
         </div>
         <div className="flex gap-2">
@@ -47,10 +49,10 @@ export default async function Customer({ params }: PageProps<"/admin/customers/[
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Paid orders</p><p className="font-display text-[34px]">{paid.length}</p></div>
-        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Spent (NGN)</p><p className="font-display text-[34px]">{formatNaira(spent)}</p></div>
-        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Average order</p><p className="font-display text-[34px]">{formatNaira(paid.length ? Math.round(spent / paid.length / 100) * 100 : 0)}</p></div>
-        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Marketing</p><p className="font-display text-[34px]">{profile?.marketingOptIn ? "Opted in" : "No"}</p></div>
+        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Paid orders</p><p className="font-display text-[length:clamp(24px,7vw,34px)]">{paid.length}</p></div>
+        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Spent (NGN)</p><p className="font-display text-[length:clamp(24px,7vw,34px)]">{formatNaira(spent)}</p></div>
+        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Average order</p><p className="font-display text-[length:clamp(24px,7vw,34px)]">{formatNaira(paid.length ? Math.round(spent / paid.length / 100) * 100 : 0)}</p></div>
+        <div className="rounded-card bg-white p-5"><p className="text-sm font-bold text-muted-foreground">Marketing</p><p className="font-display text-[length:clamp(24px,7vw,34px)]">{profile?.marketingOptIn ? "Opted in" : "No"}</p></div>
       </div>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
         <section className="rounded-card bg-white p-5">
@@ -68,6 +70,21 @@ export default async function Customer({ params }: PageProps<"/admin/customers/[
           </ul>
         </section>
         <div className="flex flex-col gap-6">
+          <section className="rounded-card bg-white p-5" data-testid="customer-favourites">
+            <h2 className="mb-3 font-sans text-body-lg font-bold">Usually orders</h2>
+            {favs.length ? (
+              <ul className="flex flex-col gap-2 text-sm">
+                {favs.map((f) => (
+                  <li key={f.name} className="flex items-baseline justify-between gap-3">
+                    <span className="font-bold">{f.name}</span>
+                    <span className="shrink-0 text-muted-foreground">{f.times === paid.length ? "every order" : `${f.times} of ${paid.length} orders`} · {f.qty} total</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">No paid orders yet.</p>
+            )}
+          </section>
           <section className="rounded-card bg-white p-5">
             <h2 className="mb-3 font-sans text-body-lg font-bold">Addresses</h2>
             {addresses.length ? addresses.map((a) => <p key={a.id} className="text-sm"><span className="font-bold">{a.label}:</span> {a.line1}, {a.area}</p>) : <p className="text-sm text-muted-foreground">None saved.</p>}

@@ -56,7 +56,7 @@ async function Combo({ params }: { params: PageProps<"/combos/[slug]">["params"]
         <div className="flex min-w-0 flex-col gap-6">
           <div>
             <Link href="/combos" className="eyebrow">Combos</Link>
-            <h1 className="mt-3 text-[44px] leading-[0.9] md:text-[64px]" data-wa-product={`the ${c.name} combo`}>{c.name}</h1>
+            <h1 className="mt-3 text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-[64px]" data-wa-product={`the ${c.name} combo`}>{c.name}</h1>
             <p className="mt-4 text-body-lg text-smoke">{c.description}</p>
           </div>
           <p className="flex items-baseline gap-3">

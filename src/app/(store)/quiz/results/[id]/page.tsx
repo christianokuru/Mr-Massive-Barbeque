@@ -41,7 +41,7 @@ export default function QuizResults({ params }: PageProps<"/quiz/results/[id]">)
   return (
     <div className="container-page py-10 md:py-16">
       <p className="eyebrow mb-3">Your picks</p>
-      <h1 className="mb-3 text-[48px] leading-[0.88] md:text-display">Here&apos;s your plate</h1>
+      <h1 className="mb-3 text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">Here&apos;s your plate</h1>
       <p className="mb-10 text-body-lg text-smoke">Picked for your crew, your heat level and your budget. Use WELCOME10 on your first order. <Link href="/quiz" className="underline">Retake the quiz</Link></p>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-card bg-sand" />}>
         <Results params={params} />

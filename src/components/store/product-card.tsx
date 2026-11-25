@@ -32,8 +32,8 @@ export function ProductCard({ p, priority = false, sizes }: { p: Card; priority?
         </span>
       </Link>
       <div className="flex flex-1 flex-col gap-1.5 pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="font-sans text-subheading font-bold tracking-[0.01em]">
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+          <h3 className="min-w-0 font-sans text-subheading font-bold tracking-[0.01em]">
             <Link href={`/menu/${p.slug}`} className="after:absolute after:inset-0 after:content-['']">
               {p.name}
             </Link>
@@ -41,7 +41,7 @@ export function ProductCard({ p, priority = false, sizes }: { p: Card; priority?
           <Price kobo={p.fromKobo} compareKobo={p.compareAtKobo} from={!p.isSide} className="shrink-0 pt-0.5" />
         </div>
         <p className="line-clamp-2 text-muted-foreground">{p.shortDescription}</p>
-        <div className="mt-auto flex items-center justify-between pt-2">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-2">
           {p.rating.count > 0 ? <Stars value={p.rating.avg} count={p.rating.count} /> : <span />}
           <span className="inline-flex items-center gap-1 font-bold group-hover:underline">
             Order now <ArrowRight className="size-4" />

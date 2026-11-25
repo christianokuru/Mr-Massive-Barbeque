@@ -8,7 +8,7 @@ export default function NotFound() {
         <Image src="/brand/logo.png" alt="Massive Barbeque" width={467} height={530} className="h-24 w-auto" />
       </Link>
       <p className="eyebrow">404</p>
-      <h1 className="text-[48px] leading-[0.88] md:text-display">This plate isn&apos;t on the menu</h1>
+      <h1 className="text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">This plate isn&apos;t on the menu</h1>
       <p className="max-w-md text-body-lg text-smoke">The page you&apos;re looking for has moved or never existed. The grill is still hot though.</p>
       <div className="flex flex-wrap justify-center gap-3">
         <Link href="/menu" className="inline-flex h-12 items-center rounded-full bg-bonnet px-6 font-bold">See the menu</Link>

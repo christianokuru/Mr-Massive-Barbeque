@@ -64,7 +64,7 @@ export default async function Home() {
         <div className="container-page pb-6 md:pb-12">
           <div className="max-w-xl rounded-card bg-cream/95 p-6 md:p-10">
             <p className="eyebrow mb-4">Fire-grilled in Lagos</p>
-            <h1 className="text-[46px] leading-[0.88] md:text-display">
+            <h1 className="text-[length:clamp(32px,9.5vw,46px)] leading-[0.88] md:text-display">
               Grilled to perfection.{" "}
               <span className="font-accent font-light text-oxblood italic">Served with love.</span>
             </h1>
@@ -111,7 +111,7 @@ export default async function Home() {
             <Link
               key={c.slug}
               href={`/category/${c.slug}`}
-              className={`shrink-0 font-display text-[34px] leading-none transition md:text-heading ${i === 0 ? "text-char" : "text-ash hover:text-char"}`}
+              className={`shrink-0 font-display text-[length:clamp(24px,7vw,34px)] leading-none transition md:text-heading ${i === 0 ? "text-char" : "text-ash hover:text-char"}`}
             >
               {c.name}
             </Link>
@@ -174,7 +174,7 @@ export default async function Home() {
         <div className="container-page grid items-center gap-10 md:grid-cols-2 md:gap-16">
           <div>
             <p className="eyebrow mb-4">How it works</p>
-            <h2 className="text-[40px] leading-[0.92] md:text-display">From our fire to your door.</h2>
+            <h2 className="text-[length:clamp(28px,8vw,40px)] leading-[0.92] md:text-display">From our fire to your door.</h2>
             <ol className="mt-8 flex flex-col gap-6">
               {[
                 ["Pick your plate", "Catfish, croaker, chicken, turkey or a combo. Choose a size and add sides."],
@@ -216,7 +216,7 @@ export default async function Home() {
         <div className="flex flex-col items-start gap-6 rounded-card bg-char p-8 text-cream md:flex-row md:items-center md:justify-between md:p-12">
           <div>
             <p className="mb-3 text-xs font-bold tracking-[0.12em] text-bonnet uppercase">60-second quiz</p>
-            <h2 className="text-[36px] leading-[0.95] md:text-heading-lg">Not sure what to order?</h2>
+            <h2 className="text-[length:clamp(26px,7.5vw,36px)] leading-[0.95] md:text-heading-lg">Not sure what to order?</h2>
             <p className="mt-3 max-w-md text-cream/75">Tell us your crew size and how much heat you can handle. We&apos;ll pick your plate.</p>
           </div>
           <Link href="/quiz" className="inline-flex h-13 shrink-0 items-center rounded-full bg-bonnet px-7 font-bold text-char">

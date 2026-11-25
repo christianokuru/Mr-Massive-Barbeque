@@ -33,7 +33,7 @@ export default async function AdminOrder({ params }: PageProps<"/admin/orders/[i
     <div className="flex flex-col gap-6">
       <Link href="/admin/orders" className="inline-flex w-fit items-center gap-1 text-sm font-bold"><ChevronLeft className="size-4" /> Orders</Link>
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-[36px] leading-none md:text-heading-lg">{o.number}</h1>
+        <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">{o.number}</h1>
         <StatusBadge status={o.status} method={o.method} />
         <Link href={`/admin/orders/${o.id}/slip`} className="ml-auto inline-flex h-11 items-center gap-2 rounded-full border-2 border-oxblood px-4 font-bold text-oxblood" data-testid="packing-slip-link">
           <Printer className="size-4" /> Packing slip

@@ -72,7 +72,7 @@ export async function MenuView({
   return (
     <div className="container-page py-10 md:py-16">
       <p className="eyebrow mb-3">{eyebrow}</p>
-      <h1 className="text-[48px] leading-[0.88] md:text-display">{title}</h1>
+      <h1 className="text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">{title}</h1>
       <p className="mt-4 max-w-2xl text-body-lg text-smoke">{intro}</p>
       <div className="mt-8 mb-10">
         <Suspense fallback={<div className="h-28" />}>

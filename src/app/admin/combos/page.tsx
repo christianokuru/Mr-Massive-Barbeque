@@ -26,7 +26,7 @@ export default async function Combos() {
   const opts = variants.map((v) => ({ id: v.id, label: `${v.product} · ${v.name} (${formatNaira(v.priceKobo)})`, priceKobo: v.priceKobo }));
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Combos</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Combos</h1>
       <div className="grid gap-4 2xl:grid-cols-2">
         {combos.map((c) => (
           <ComboEditor

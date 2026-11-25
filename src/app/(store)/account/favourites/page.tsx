@@ -18,7 +18,7 @@ export default async function FavouritesPage() {
   const saved = cards.filter((c) => ids.includes(c.id));
   return (
     <div>
-      <h1 className="mb-8 text-[44px] leading-[0.9] md:text-heading-lg">Saved</h1>
+      <h1 className="mb-8 text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-heading-lg">Saved</h1>
       {saved.length ? (
         <ProductGrid products={saved} />
       ) : (

@@ -16,7 +16,7 @@ export default function Journal() {
   return (
     <div className="container-page py-10 md:py-16">
       <p className="eyebrow mb-3">Journal</p>
-      <h1 className="mb-10 text-[48px] leading-[0.88] md:text-display">Notes from the grill</h1>
+      <h1 className="mb-10 text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">Notes from the grill</h1>
       <div className="grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
         {ARTICLES.map((a, i) => (
           <article key={a.slug} className="group flex flex-col gap-3">

@@ -18,7 +18,7 @@ export default async function Customers({ searchParams }: PageProps<"/admin/cust
   const rows = await listCustomers(q);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Customers</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Customers</h1>
       <form action="/admin/customers"><input name="q" defaultValue={q} placeholder="Search name or email" className="h-11 w-full max-w-sm rounded-full border border-line bg-white px-4" /></form>
       {rows.length ? (
         <div className="overflow-x-auto rounded-card bg-white">

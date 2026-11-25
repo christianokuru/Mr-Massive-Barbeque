@@ -81,7 +81,7 @@ export function Quiz({ signedIn }: { signedIn: boolean }) {
 
       {current ? (
         <fieldset>
-          <legend className="mb-6 font-display text-[36px] leading-none md:text-heading-lg">{current.q}</legend>
+          <legend className="mb-6 font-display text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">{current.q}</legend>
           <div className="grid gap-3 sm:grid-cols-2">
             {current.options.map(([v, label, sub]) => (
               <button
@@ -116,7 +116,7 @@ export function Quiz({ signedIn }: { signedIn: boolean }) {
           }}
           className="flex flex-col gap-4"
         >
-          <p className="font-display text-[36px] leading-none md:text-heading-lg">Want 10% off your picks?</p>
+          <p className="font-display text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Want 10% off your picks?</p>
           <p className="text-smoke">Drop your email and we&apos;ll send your welcome code. Or skip it, your picks are ready either way.</p>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email (optional)" autoComplete="email" className="h-12 rounded-lg border border-input bg-white px-3" data-testid="quiz-email" />
           {error ? <p className="font-bold text-chili" role="alert">{error}</p> : null}

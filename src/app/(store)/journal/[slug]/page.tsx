@@ -53,7 +53,7 @@ async function ArticleBody({ params }: { params: PageProps<"/journal/[slug]">["p
     <article className="container-page max-w-3xl py-10 md:py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(ld) }} />
       <Link href="/journal" className="eyebrow">Journal</Link>
-      <h1 className="mt-4 text-[42px] leading-[0.92] md:text-[60px]">{a.title}</h1>
+      <h1 className="mt-4 text-[length:clamp(28px,8vw,42px)] leading-[0.92] md:text-[60px]">{a.title}</h1>
       <p className="mt-4 text-muted-foreground">{formatDate(a.date)} · {a.readMins} min read</p>
       <div className="relative mt-8 aspect-[16/10] overflow-hidden rounded-image bg-sand">
         <Image src={`${MEDIA}/products/${a.image}.webp`} alt="" fill priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />

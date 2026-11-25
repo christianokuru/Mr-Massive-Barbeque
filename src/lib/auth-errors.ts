@@ -15,6 +15,9 @@ export function authErrorMessage(err: { code?: string; message?: string; status?
     case "USER_ALREADY_EXISTS":
     case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
       return "An account with that email already exists. Try signing in.";
+    case "INVALID_ORIGIN":
+    case "MISSING_OR_NULL_ORIGIN":
+      return "We couldn't sign you in from this address. Please open massivebarbeque.com and try again.";
     case "INVALID_TOKEN":
       return "This link is invalid or has expired. Request a new one.";
   }

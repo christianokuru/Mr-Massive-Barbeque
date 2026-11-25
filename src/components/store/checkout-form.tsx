@@ -216,7 +216,7 @@ export function CheckoutForm({
         </ul>
         <div className="flex gap-2">
           <label className="sr-only" htmlFor="code">Coupon or referral code</label>
-          <input id="code" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="Coupon or referral code" className="h-11 min-w-0 flex-1 rounded-lg border border-input px-3 uppercase" data-testid="code-input" />
+          <input id="code" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="Promo code" className="h-11 min-w-0 flex-1 rounded-lg border border-input px-3 uppercase" data-testid="code-input" />
           <button type="button" onClick={() => setAppliedCode(code.trim())} className="h-11 rounded-full bg-char px-4 font-bold text-cream" data-testid="apply-code">
             Apply
           </button>

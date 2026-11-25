@@ -16,7 +16,7 @@ export default async function Coupons() {
   const rows = await couponsWithRevenue();
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Coupons</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Coupons</h1>
       <CouponForm />
       <div className="overflow-x-auto rounded-card bg-white">
         <table className="w-full min-w-[820px] text-sm" data-testid="coupons-table">

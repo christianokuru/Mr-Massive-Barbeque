@@ -57,7 +57,7 @@ export default async function EditProduct({ params }: PageProps<"/admin/products
   return (
     <div className="flex flex-col gap-6">
       <Link href="/admin/products" className="inline-flex w-fit items-center gap-1 text-sm font-bold"><ChevronLeft className="size-4" /> Products</Link>
-      <h1 className="text-[36px] leading-none md:text-heading-lg">{initial.id ? initial.name : "New product"}</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">{initial.id ? initial.name : "New product"}</h1>
       {initial.id ? <ImageManager productId={initial.id} images={images} /> : <p className="text-sm text-muted-foreground">Create the product first, then add photos.</p>}
       <ProductForm initial={initial} categories={categories} occasions={occasions} />
     </div>

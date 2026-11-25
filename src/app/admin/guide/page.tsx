@@ -269,12 +269,14 @@ const SECTIONS: Section[] = [
   },
   {
     id: "customers",
-    title: "Customers, abandoned bags & subscribers",
+    title: "Customers, regulars, abandoned bags & subscribers",
     icon: Users,
     intro: "Who's buying, and who almost did.",
     body: (
       <>
-        <p><strong>Customers</strong> lists everyone with an account, with their number of orders and total spend. Tap a name to see their orders, saved addresses, quiz answers and buttons to email or WhatsApp them.</p>
+        <p><strong>Customers</strong> lists everyone with an account, with their number of orders and total spend. Tap a name to see their orders, what they <strong>usually order</strong>, saved addresses, quiz answers and buttons to email or WhatsApp them.</p>
+        <p><strong>Regulars</strong> shows the people who buy again and again (2 or more paid orders), including guests who checked out without an account. For each one you see how many times they&apos;ve ordered, how much they&apos;ve spent, how often they order (for example &quot;about every 7 days&quot;) and the items they pick most. The box on the right lists what your regulars buy most, so you know what never to run out of. Use the buttons at the top to look at the last 30 days, 90 days, a year or all time.</p>
+        <Tip>If a regular&apos;s &quot;last order&quot; date is red, they haven&apos;t ordered in over a month. Send them a WhatsApp with a coupon code to win them back.</Tip>
         <p><strong>Abandoned bags</strong> shows people who put food in their bag but didn&apos;t pay. The website emails them a reminder automatically (at most twice, so nobody gets spammed). If we have their phone number, a <strong>WhatsApp</strong> button lets you nudge them personally.</p>
         <p><strong>Subscribers</strong> is your mailing list. Tap <strong>CSV</strong> to download it for an email campaign.</p>
       </>
@@ -384,7 +386,7 @@ export default async function AdminGuide() {
     <div className="flex flex-col gap-6">
       <div>
         <p className="text-sm text-muted-foreground">How to use your dashboard</p>
-        <h1 className="text-[36px] leading-none md:text-heading-lg">Guide</h1>
+        <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Guide</h1>
         <p className="mt-3 max-w-2xl text-body-lg text-smoke">A plain-English manual for running Massive Barbeque online. Read it once from top to bottom, then come back whenever you need a reminder.</p>
       </div>
 

@@ -18,7 +18,7 @@ export function AuthShell({ title, subtitle, children, photo = "grilled-chicken"
           <Image src="/brand/logo.png" alt="Massive Barbeque" width={467} height={530} className="h-14 w-auto" />
         </Link>
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-          <h1 className="text-[44px] leading-[0.9] md:text-[56px]">{title}</h1>
+          <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-[56px]">{title}</h1>
           {subtitle ? <div className="mt-3 text-body-lg text-smoke">{subtitle}</div> : null}
           <div className="mt-8">{children}</div>
         </div>

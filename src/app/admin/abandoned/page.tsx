@@ -18,7 +18,7 @@ export default async function Abandoned() {
   const total = rows.reduce((s, r) => s + (r.value_kobo ?? 0), 0);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Abandoned bags</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Abandoned bags</h1>
       <p className="text-muted-foreground">{rows.length} bags · {formatNaira(total)} left on the table. Reminder emails go out automatically (max 2 per bag) when we have an email.</p>
       {rows.length ? (
         <div className="overflow-x-auto rounded-card bg-white">

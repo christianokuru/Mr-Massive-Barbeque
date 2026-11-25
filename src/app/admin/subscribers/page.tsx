@@ -21,7 +21,7 @@ export default async function Subscribers() {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[36px] leading-none md:text-heading-lg">Subscribers <span className="text-muted-foreground">({total.n})</span></h1>
+        <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Subscribers <span className="text-muted-foreground">({total.n})</span></h1>
         <a href="/api/admin/subscribers.csv" className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-oxblood px-4 font-bold text-oxblood"><Download className="size-4" /> CSV</a>
       </div>
       {rows.length ? (

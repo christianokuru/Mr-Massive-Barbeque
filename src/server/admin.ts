@@ -204,3 +204,93 @@ export async function couponsWithRevenue() {
     .orderBy(desc(s.coupon.createdAt))
     .limit(300);
 }
+
+/* ───────────── Regular customers ───────────── */
+
+const REV_SQL = sql.raw(`('confirmed','preparing','out_for_delivery','delivered')`);
+
+export type Favourite = { name: string; qty: number; times: number };
+export type Regular = {
+  email: string;
+  name: string;
+  phone: string;
+  user_id: string | null;
+  orders: number;
+  spent: number;
+  first_at: Date;
+  last_at: Date;
+  /** whole days since the last order */
+  days_ago: number;
+  /** average days between orders (null with fewer than 2) */
+  gap_days: number | null;
+  favs: Favourite[];
+};
+
+/**
+ * Customers grouped by email (guests and account holders alike), with how often they
+ * buy and the items they order most. `days = 0` means all time.
+ */
+export async function regularCustomers(days: number, minOrders: number) {
+  const since = days > 0 ? new Date(Date.now() - days * 86_400_000) : new Date(0);
+  const paid = sql`select o.id, lower(o.email) as email, o.name, o.phone, o.user_id, o.total_kobo, o.created_at
+    from "order" o where o.status in ${REV_SQL} and o.created_at >= ${since}`;
+
+  const [regulars, summary, topItems] = await Promise.all([
+    db.execute<Regular>(sql`
+      with paid as (${paid}),
+      cust as (
+        select email, count(*)::int as orders, sum(total_kobo)::bigint::float8 as spent,
+          min(created_at) as first_at, max(created_at) as last_at,
+          (array_agg(name order by created_at desc))[1] as name,
+          (array_agg(phone order by created_at desc))[1] as phone,
+          (array_agg(user_id order by created_at desc) filter (where user_id is not null))[1] as user_id
+        from paid group by email having count(*) >= ${minOrders}
+      ),
+      fav as (
+        select p.email, i.name, sum(i.qty)::int as qty, count(distinct p.id)::int as times,
+          row_number() over (partition by p.email order by count(distinct p.id) desc, sum(i.qty) desc, i.name) as rn
+        from paid p join order_item i on i.order_id = p.id
+        where p.email in (select email from cust)
+        group by p.email, i.name
+      )
+      select c.*,
+        floor(extract(epoch from now() - c.last_at) / 86400)::int as days_ago,
+        case when c.orders > 1 then round(extract(epoch from c.last_at - c.first_at) / 86400 / (c.orders - 1))::int end as gap_days,
+        coalesce(json_agg(json_build_object('name', f.name, 'qty', f.qty, 'times', f.times) order by f.rn)
+        filter (where f.rn <= 3), '[]'::json) as favs
+      from cust c left join fav f on f.email = c.email
+      group by c.email, c.orders, c.spent, c.first_at, c.last_at, c.name, c.phone, c.user_id
+      order by c.orders desc, c.spent desc
+      limit 100
+    `),
+    db.execute<{ customers: number; repeat: number; revenue: number; repeat_revenue: number }>(sql`
+      with paid as (${paid}),
+      c as (select email, count(*) as n, sum(total_kobo) as spent from paid group by email)
+      select count(*)::int as customers,
+        (count(*) filter (where n >= 2))::int as repeat,
+        coalesce(sum(spent), 0)::float8 as revenue,
+        coalesce(sum(spent) filter (where n >= 2), 0)::float8 as repeat_revenue
+      from c
+    `),
+    db.execute<{ name: string; customers: number; qty: number }>(sql`
+      with paid as (${paid}),
+      rep as (select email from paid group by email having count(*) >= 2)
+      select i.name, count(distinct p.email)::int as customers, sum(i.qty)::int as qty
+      from paid p join order_item i on i.order_id = p.id
+      where p.email in (select email from rep)
+      group by i.name order by 2 desc, 3 desc limit 8
+    `),
+  ]);
+  return { regulars: regulars.rows, summary: summary.rows[0], topItems: topItems.rows };
+}
+
+/** What one customer orders most (all time). */
+export async function customerFavourites(userId: string, email: string) {
+  const r = await db.execute<Favourite & { last_at: Date }>(sql`
+    select i.name, sum(i.qty)::int as qty, count(distinct o.id)::int as times, max(o.created_at) as last_at
+    from "order" o join order_item i on i.order_id = o.id
+    where (o.user_id = ${userId} or o.email = ${email.toLowerCase()}) and o.status in ${REV_SQL}
+    group by i.name order by 3 desc, 2 desc limit 6
+  `);
+  return r.rows;
+}

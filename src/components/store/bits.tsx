@@ -86,7 +86,7 @@ export function SectionHeading({ eyebrow, title, action, className }: { eyebrow?
     <div className={cn("mb-6 flex flex-wrap items-end justify-between gap-4 md:mb-8", className)}>
       <div>
         {eyebrow ? <p className="eyebrow mb-3">{eyebrow}</p> : null}
-        <h2 className="text-[34px] leading-[0.95] md:text-heading-lg">{title}</h2>
+        <h2 className="text-[length:clamp(24px,7vw,34px)] leading-[0.95] md:text-heading-lg">{title}</h2>
       </div>
       {action}
     </div>

@@ -53,7 +53,7 @@ export default function TrackPage({ searchParams }: PageProps<"/track">) {
   return (
     <div className="container-page max-w-3xl py-10 md:py-16">
       <p className="eyebrow mb-3">Track order</p>
-      <h1 className="mb-8 text-[48px] leading-[0.88] md:text-display">Where&apos;s my BBQ?</h1>
+      <h1 className="mb-8 text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">Where&apos;s my BBQ?</h1>
       <Suspense fallback={<div className="h-48 animate-pulse rounded-card bg-sand" />}>
         <Lookup searchParams={searchParams} />
       </Suspense>

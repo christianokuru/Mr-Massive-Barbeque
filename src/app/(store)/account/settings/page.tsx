@@ -27,7 +27,7 @@ export default async function SettingsPage() {
   const hasPassword = (await db.$count(s.account, eq(s.account.userId, session.user.id))) > 0;
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-[44px] leading-[0.9] md:text-heading-lg">Settings</h1>
+      <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-heading-lg">Settings</h1>
       <p className="-mt-3 text-muted-foreground">Signed in as {session.user.email}</p>
       <Card title="Profile">
         <ProfileForm name={session.user.name} phone={profile?.phone ?? ""} />

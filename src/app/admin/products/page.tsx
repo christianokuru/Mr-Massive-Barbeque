@@ -49,7 +49,7 @@ export default async function AdminProducts({ searchParams }: PageProps<"/admin/
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-[36px] leading-none md:text-heading-lg">Products</h1>
+        <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Products</h1>
         <Link href="/admin/products/new" className="inline-flex h-11 items-center gap-2 rounded-full bg-bonnet px-5 font-bold"><Plus className="size-4" /> New product</Link>
       </div>
       <form className="flex flex-wrap gap-3" action="/admin/products">

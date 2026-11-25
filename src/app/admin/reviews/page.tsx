@@ -27,7 +27,7 @@ export default async function Reviews({ searchParams }: PageProps<"/admin/review
     .limit(200);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Reviews</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Reviews</h1>
       <nav className="flex gap-2">
         {(["pending", "approved", "rejected"] as const).map((t) => (
           <Link key={t} href={`/admin/reviews?status=${t}`} className={cn("rounded-full px-4 py-2 text-sm font-bold capitalize", t === tab ? "bg-oxblood text-cream" : "bg-white")}>{t}</Link>

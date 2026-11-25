@@ -15,7 +15,7 @@ export default async function Shipping() {
   const zones = await db.select().from(s.shippingZone).orderBy(asc(s.shippingZone.sort), asc(s.shippingZone.id));
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Delivery zones</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Delivery zones</h1>
       <p className="text-muted-foreground">Fee, free-delivery threshold and ETA per Lagos area. Pickup is always free.</p>
       {zones.map((z) => (
         <ZoneRow key={z.id} zone={{ id: z.id, name: z.name, areas: z.areas, feeNaira: z.feeKobo / 100, freeOverNaira: z.freeOverKobo ? z.freeOverKobo / 100 : null, etaText: z.etaText, active: z.active }} />

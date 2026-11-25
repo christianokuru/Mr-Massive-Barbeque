@@ -37,7 +37,7 @@ export default async function AccountHome() {
     <div className="flex flex-col gap-10">
       <div>
         <p className="eyebrow mb-2">Your account</p>
-        <h1 className="text-[44px] leading-[0.9] md:text-display">Hi, {name.split(" ")[0]}.</h1>
+        <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-display">Hi, {name.split(" ")[0]}.</h1>
       </div>
 
       {active ? (

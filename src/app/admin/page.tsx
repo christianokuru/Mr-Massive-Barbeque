@@ -19,7 +19,7 @@ function Stat({ label, value, sub, href }: { label: string; value: string; sub?:
   const body = (
     <>
       <p className="text-sm font-bold text-muted-foreground">{label}</p>
-      <p className="mt-2 font-display text-[34px] leading-none" data-testid={`stat-${label.toLowerCase().replace(/\s+/g, "-")}`}>{value}</p>
+      <p className="mt-2 font-display text-[length:clamp(24px,7vw,34px)] leading-none" data-testid={`stat-${label.toLowerCase().replace(/\s+/g, "-")}`}>{value}</p>
       {sub ? <p className="mt-2 text-sm text-muted-foreground">{sub}</p> : null}
     </>
   );
@@ -45,7 +45,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-muted-foreground">{formatDate(new Date())}</p>
-          <h1 className="text-[36px] leading-none md:text-heading-lg">{greeting()}, {session.user.name.split(" ")[0]}</h1>
+          <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">{greeting()}, {session.user.name.split(" ")[0]}</h1>
         </div>
         <nav aria-label="Range" className="inline-flex rounded-full bg-white p-1" data-testid="range-switch">
           {RANGES.map((r) => (

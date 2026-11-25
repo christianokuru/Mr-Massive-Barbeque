@@ -39,11 +39,11 @@ const cols = [
 export function Footer() {
   return (
     <footer className="mt-auto bg-oxblood pb-safe text-cream print:hidden">
-      <div className="container-page grid gap-12 py-14 md:grid-cols-[1.3fr_2fr] md:py-20">
+      <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-12 py-14 md:grid-cols-[minmax(0,1.3fr)_minmax(0,2fr)] md:py-20">
         <div className="flex flex-col gap-6">
           <Image src="/brand/logo-light.png" alt="Massive Barbeque" width={333} height={378} className="h-24 w-auto self-start" />
           <div>
-            <p className="font-display text-[32px] leading-none">10% off your first order</p>
+            <p className="font-display text-[length:clamp(24px,6.8vw,32px)] leading-none">10% off your first order</p>
             <p className="mt-2 text-cream/75">New menu drops, weekend specials and your welcome code.</p>
           </div>
           <NewsletterForm source="footer" dark />

@@ -18,7 +18,7 @@ export default async function OrdersPage() {
   const orders = await listMyOrders(session.user.id, session.user.email);
   return (
     <div>
-      <h1 className="mb-8 text-[44px] leading-[0.9] md:text-heading-lg">Your orders</h1>
+      <h1 className="mb-8 text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-heading-lg">Your orders</h1>
       {orders.length ? (
         <ul className="flex flex-col gap-3" data-testid="orders-list">
           {orders.map((o) => (

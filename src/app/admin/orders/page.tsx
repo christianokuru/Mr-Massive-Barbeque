@@ -45,7 +45,7 @@ export default async function AdminOrders({ searchParams }: PageProps<"/admin/or
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Orders</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Orders</h1>
       <Suspense>
         <OrdersToolbar />
       </Suspense>

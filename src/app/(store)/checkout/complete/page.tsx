@@ -52,7 +52,7 @@ async function Result({ searchParams }: { searchParams: PageProps<"/checkout/com
       {paid ? (
         <div className="flex flex-col items-start gap-3">
           <CheckCircle2 className="size-12 text-oxblood" />
-          <h1 className="text-[44px] leading-[0.9] md:text-display">It&apos;s on the grill, {o.name.split(" ")[0]}.</h1>
+          <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-display">It&apos;s on the grill, {o.name.split(" ")[0]}.</h1>
           <p className="text-body-lg text-smoke">Payment received. We&apos;ve emailed your receipt to {o.email}.</p>
           <PurchaseTracker
             number={o.number}

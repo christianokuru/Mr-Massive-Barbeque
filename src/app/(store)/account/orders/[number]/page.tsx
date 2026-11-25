@@ -24,7 +24,7 @@ export default async function OrderPage({ params }: PageProps<"/account/orders/[
   return (
     <div className="flex flex-col gap-6">
       <Link href="/account/orders" className="inline-flex w-fit items-center gap-1 text-sm font-bold"><ChevronLeft className="size-4" /> All orders</Link>
-      <h1 className="text-[40px] leading-[0.9] md:text-heading-lg">Order {o.number}</h1>
+      <h1 className="text-[length:clamp(28px,8vw,40px)] leading-[0.9] md:text-heading-lg">Order {o.number}</h1>
       <div className="rounded-card bg-white p-5">
         <OrderDetails o={o} showTimeline />
       </div>

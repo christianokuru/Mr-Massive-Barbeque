@@ -18,7 +18,7 @@ export default function QuizPage() {
   return (
     <div className="container-page py-10 md:py-16">
       <p className="eyebrow mb-3 text-center">60-second quiz</p>
-      <h1 className="mb-10 text-center text-[48px] leading-[0.88] md:text-display">Find your plate</h1>
+      <h1 className="mb-10 text-center text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">Find your plate</h1>
       <Suspense fallback={<div className="mx-auto h-96 max-w-2xl animate-pulse rounded-card bg-sand" />}>
         <QuizSlot />
       </Suspense>

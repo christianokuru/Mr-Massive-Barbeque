@@ -14,7 +14,7 @@ export default async function CombosPage() {
   return (
     <div className="container-page py-10 md:py-16">
       <p className="eyebrow mb-3">Combos & platters</p>
-      <h1 className="text-[48px] leading-[0.88] md:text-display">More grill, less money</h1>
+      <h1 className="text-[length:clamp(32px,9vw,48px)] leading-[0.88] md:text-display">More grill, less money</h1>
       <p className="mt-4 max-w-2xl text-body-lg text-smoke">Our favourite pairings, priced below buying each item on its own. Perfect for two, the family, or the whole office.</p>
       <div className="mt-10">
         {combos.length ? (

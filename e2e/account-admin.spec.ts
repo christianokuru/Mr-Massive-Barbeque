@@ -93,6 +93,15 @@ test.describe("admin", () => {
     const csv = await (await page.request.get(`/api/admin/orders.csv?q=0803%20123`)).text();
     expect(csv.trim().split("\n").length).toBe(rows + 1);
 
+    // Regulars: stats + list render for every range, page fits the screen
+    for (const range of ["30", "0"]) {
+      await page.goto(`/admin/regulars?range=${range}`);
+      await expect(page.getByRole("heading", { name: "Regulars", exact: true })).toBeVisible();
+      await expect(page.getByTestId("regulars-list")).toBeVisible();
+      await expect(page.getByTestId("regulars-top-items")).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+
     // Settings: invalid WhatsApp rejected, banner shows on storefront
     await page.goto("/admin/settings");
     await page.locator("input[name=whatsapp]").fill("123");

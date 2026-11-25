@@ -24,7 +24,7 @@ export default async function AddressesPage() {
   ]);
   return (
     <div>
-      <h1 className="mb-8 text-[44px] leading-[0.9] md:text-heading-lg">Addresses</h1>
+      <h1 className="mb-8 text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-heading-lg">Addresses</h1>
       <AddressManager
         addresses={rows.map(({ a, zoneName }) => ({ id: a.id, label: a.label, line1: a.line1, area: a.area, zoneName, phone: a.phone, isDefault: a.isDefault }))}
         zones={zones.map((z) => ({ id: z.id, name: z.name }))}

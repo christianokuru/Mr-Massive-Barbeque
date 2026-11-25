@@ -135,7 +135,7 @@ async function Product({ params }: { params: PageProps<"/menu/[slug]">["params"]
             <div>
               {p.categoryName ? <p className="eyebrow mb-3">{p.categoryName}</p> : null}
               <div className="flex items-start justify-between gap-4">
-                <h1 className="text-[44px] leading-[0.9] md:text-[64px]" data-wa-product={p.name}>{p.name}</h1>
+                <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-[64px]" data-wa-product={p.name}>{p.name}</h1>
                 <Suspense fallback={<span className="size-11" />}>
                   <FavouriteSlot productId={p.id} />
                 </Suspense>
@@ -186,7 +186,7 @@ async function Product({ params }: { params: PageProps<"/menu/[slug]">["params"]
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="eyebrow mb-3">Verified buyers</p>
-              <h2 className="text-[36px] leading-none md:text-heading">Reviews</h2>
+              <h2 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading">Reviews</h2>
               {p.rating.count ? (
                 <p className="mt-3 flex items-center gap-2"><span className="font-display text-heading-sm">{p.rating.avg.toFixed(1)}</span><Stars value={p.rating.avg} count={p.rating.count} /></p>
               ) : null}
@@ -218,7 +218,7 @@ async function Product({ params }: { params: PageProps<"/menu/[slug]">["params"]
 
         {related.length ? (
           <section className="mt-16 md:mt-24">
-            <h2 className="mb-8 text-[36px] leading-none md:text-heading">You might also crave</h2>
+            <h2 className="mb-8 text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading">You might also crave</h2>
             <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((x) => <ProductCard key={x.id} p={x} />)}
             </div>

@@ -17,12 +17,45 @@ const google =
       }
     : undefined;
 
+/**
+ * Every address the site can be opened on. Sign-in is refused ("Invalid origin")
+ * from any other address, so we trust: the configured URLs, their www / non-www
+ * twin, and the Vercel-provided deployment URLs.
+ */
+function trustedOrigins(): string[] {
+  const urls = [
+    process.env.NEXT_PUBLIC_APP_URL,
+    process.env.BETTER_AUTH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
+    process.env.VERCEL_BRANCH_URL && `https://${process.env.VERCEL_BRANCH_URL}`,
+    process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+    "https://massivebarbeque.com",
+  ];
+  const out = new Set<string>(["http://localhost:3000"]);
+  for (const u of urls) {
+    if (!u) continue;
+    try {
+      const { protocol, host } = new URL(u.trim());
+      out.add(`${protocol}//${host}`);
+      out.add(host.startsWith("www.") ? `${protocol}//${host.slice(4)}` : `${protocol}//www.${host}`);
+    } catch {
+      /* ignore malformed values */
+    }
+  }
+  return [...out];
+}
+
+const baseURL =
+  process.env.BETTER_AUTH_URL?.trim() ||
+  process.env.NEXT_PUBLIC_APP_URL?.trim() ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined);
+
 export const auth = betterAuth({
   appName: "Massive Barbeque",
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL,
   secret: process.env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, { provider: "pg", schema, usePlural: false }),
-  trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"],
+  trustedOrigins: trustedOrigins(),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -70,7 +103,7 @@ export const auth = betterAuth({
     deleteUser: { enabled: false }, // handled by our own server action (keeps orders, removes PII)
   },
   advanced: {
-    useSecureCookies: (process.env.BETTER_AUTH_URL ?? "").startsWith("https://"),
+    useSecureCookies: (baseURL ?? "").startsWith("https://"),
   },
   plugins: [nextCookies()], // must stay last
 });

@@ -8,30 +8,30 @@ export const metadata: Metadata = { title: "Contact us", description: "Contact M
 
 export default async function Contact() {
   const { whatsappNumber } = await getSettings();
-  const card = "flex items-center gap-4 rounded-card bg-white p-5 hover:ring-2 hover:ring-oxblood/30";
+  const card = "flex min-w-0 items-center gap-4 rounded-card bg-white p-5 hover:ring-2 hover:ring-oxblood/30";
   return (
     <div className="container-page max-w-3xl py-10 md:py-16">
       <p className="eyebrow mb-3">Contact</p>
-      <h1 className="text-[44px] leading-[0.9] md:text-[64px]">Talk to the grill</h1>
+      <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-[64px]">Talk to the grill</h1>
       <p className="mt-4 text-body-lg text-smoke">Questions about an order, a party, or just want to tell us how much you loved the catfish? We&apos;re listening.</p>
       <div className="mt-10 grid gap-4">
         {whatsappNumber ? (
           <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className={card}>
-            <MessageCircle className="size-8 text-[#25D366]" />
-            <span><span className="block text-subheading font-bold">WhatsApp</span><span className="text-muted-foreground">Fastest for orders and parties</span></span>
+            <MessageCircle className="size-8 shrink-0 text-[#25D366]" />
+            <span className="min-w-0"><span className="block text-subheading font-bold [overflow-wrap:anywhere]">WhatsApp</span><span className="text-muted-foreground">Fastest for orders and parties</span></span>
           </a>
         ) : null}
         <a href={`mailto:${siteConfig.email}`} className={card}>
-          <Mail className="size-8 text-oxblood" />
-          <span><span className="block text-subheading font-bold">{siteConfig.email}</span><span className="text-muted-foreground">We reply within a day</span></span>
+          <Mail className="size-8 shrink-0 text-oxblood" />
+          <span className="min-w-0"><span className="block text-subheading font-bold [overflow-wrap:anywhere]">{siteConfig.email}</span><span className="text-muted-foreground">We reply within a day</span></span>
         </a>
         <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.pickup.full)}`} target="_blank" rel="noopener noreferrer" className={card}>
-          <MapPin className="size-8 text-oxblood" />
-          <span><span className="block text-subheading font-bold">Pickup</span><span className="text-muted-foreground">{siteConfig.pickup.full}</span></span>
+          <MapPin className="size-8 shrink-0 text-oxblood" />
+          <span className="min-w-0"><span className="block text-subheading font-bold [overflow-wrap:anywhere]">Pickup</span><span className="text-muted-foreground">{siteConfig.pickup.full}</span></span>
         </a>
         <Link href="/track" className={card}>
-          <Package className="size-8 text-oxblood" />
-          <span><span className="block text-subheading font-bold">Track an order</span><span className="text-muted-foreground">Order number + email</span></span>
+          <Package className="size-8 shrink-0 text-oxblood" />
+          <span className="min-w-0"><span className="block text-subheading font-bold [overflow-wrap:anywhere]">Track an order</span><span className="text-muted-foreground">Order number + email</span></span>
         </Link>
       </div>
       <div className="mt-10 flex flex-wrap gap-2">

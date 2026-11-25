@@ -20,7 +20,7 @@ export default async function Categories() {
     .orderBy(asc(s.category.sort));
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-[36px] leading-none md:text-heading-lg">Categories</h1>
+      <h1 className="text-[length:clamp(26px,7.5vw,36px)] leading-none md:text-heading-lg">Categories</h1>
       {rows.map(({ c, products }) => (
         <CategoryRow key={c.id} cat={{ id: c.id, name: c.name, slug: c.slug, description: c.description, sort: c.sort, products }} />
       ))}

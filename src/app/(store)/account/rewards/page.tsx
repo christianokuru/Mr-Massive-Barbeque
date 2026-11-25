@@ -29,7 +29,7 @@ export default async function RewardsPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <h1 className="text-[44px] leading-[0.9] md:text-heading-lg">Rewards</h1>
+      <h1 className="text-[length:clamp(30px,8.5vw,44px)] leading-[0.9] md:text-heading-lg">Rewards</h1>
 
       <section className="rounded-card bg-paprika p-5 md:p-8">
         <p className="eyebrow mb-2">Refer a friend</p>
