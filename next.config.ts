@@ -77,8 +77,7 @@ const nextConfig: NextConfig = {
       "44": "catfish-pepper-soup",
     };
     return [
-      // One address for everyone: www → bare domain (keeps sign-in cookies on one host).
-      { source: "/:path*", has: [{ type: "host" as const, value: "www.massivebarbeque.com" }], destination: "https://massivebarbeque.com/:path*", permanent: true },
+      // www ↔ bare-domain redirect is set in Vercel (Settings → Domains), never here: doing it in both places loops.
       ...Object.entries(old).map(([id, slug]) => ({ source: `/product/${id}`, destination: `/menu/${slug}`, permanent: true })),
       { source: "/product/:id", destination: "/menu", permanent: true },
       { source: "/login", destination: "/sign-in", permanent: true },
