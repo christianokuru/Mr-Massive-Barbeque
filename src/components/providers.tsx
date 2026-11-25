@@ -4,6 +4,7 @@ import Lenis from "lenis";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { ConfirmHost } from "./confirm";
+import { ServiceWorkerRegister } from "./sw-register";
 
 function SmoothScroll() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export function Providers() {
     <>
       <SmoothScroll />
       <ConfirmHost />
+      <ServiceWorkerRegister />
       <Toaster
         position="top-center"
         toastOptions={{

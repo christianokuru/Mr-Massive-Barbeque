@@ -26,8 +26,8 @@ export async function proxy(req: NextRequest) {
   }
 
   // Real 404s (before streaming) for unknown catalogue URLs.
-  const m = pathname.match(/^\/(menu|category|occasion|combos)\/([^/]+)\/?$/);
-  if (m && !(await slugExists(m[1] as "menu" | "category" | "occasion" | "combos", decodeURIComponent(m[2])))) {
+  const m = pathname.match(/^\/(menu|category|occasion|combos|journal)\/([^/]+)\/?$/);
+  if (m && !(await slugExists(m[1] as "menu" | "category" | "occasion" | "combos" | "journal", decodeURIComponent(m[2])))) {
     return NextResponse.rewrite(new URL("/__not-found", req.url), { status: 404 });
   }
 
@@ -40,5 +40,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/admin/:path*", "/account/:path*", "/menu/:slug", "/category/:slug", "/occasion/:slug", "/combos/:slug"],
+  matcher: ["/admin/:path*", "/api/admin/:path*", "/account/:path*", "/menu/:slug", "/category/:slug", "/occasion/:slug", "/combos/:slug", "/journal/:slug"],
 };

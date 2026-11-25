@@ -3,7 +3,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as s from "@/db/schema";
 
-type Kind = "menu" | "category" | "occasion" | "combos";
+import { ARTICLES } from "@/content/articles";
+
+type Kind = "menu" | "category" | "occasion" | "combos" | "journal";
 const TTL = 60_000;
 let cache: { at: number; sets: Record<Kind, Set<string>> } | null = null;
 
@@ -21,6 +23,7 @@ async function load() {
       category: new Set(categories.map((x) => x.slug)),
       occasion: new Set(occasions.map((x) => x.slug)),
       combos: new Set(combos.map((x) => x.slug)),
+      journal: new Set(ARTICLES.map((a) => a.slug)),
     },
   };
   return cache;
