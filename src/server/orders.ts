@@ -8,7 +8,7 @@ import { siteConfig } from "@/lib/site";
 import { emails, type OrderEmailData } from "./email";
 import { initializeTransaction, verifyTransaction, type VerifiedTransaction } from "./paystack";
 import { consumeCoupon, quote, REFERRAL_REWARD_KOBO } from "./pricing";
-import { pushToAdmin } from "./push";
+import { pushToAdmin, pushToOrder } from "./push";
 import { variantDemand, type CartLine } from "./cart";
 
 export const PAYMENT_WINDOW_MIN = 60;
@@ -257,6 +257,7 @@ export async function orderEmailData(orderId: number): Promise<OrderEmailData | 
     zoneName: o.zoneName,
     couponCode: o.couponCode,
     paidAt: o.paidAt,
+    userId: o.userId,
     items: items.map((i) => ({ name: i.name, size: i.size, qty: i.qty, unitKobo: i.unitKobo })),
   };
 }
@@ -306,6 +307,9 @@ export async function settlePayment(reference: string, verified?: VerifiedTransa
       await addEvent(tx, order.id, "payment_problem", { note: reason });
       const admin = process.env.ADMIN_EMAIL;
       if (admin) after.push(() => emails.paymentProblem(admin, order.number, reason, `${appUrl()}/admin/orders/${order.id}`));
+      after.push(() =>
+        pushToAdmin({ title: `⚠️ Payment problem on ${order.number}`, body: reason, url: `/admin/orders/${order.id}`, tag: `order-${order.id}` }),
+      );
       return { outcome: "flagged" as const, orderNumber: order.number, reason };
     };
 
@@ -443,8 +447,27 @@ export async function changeOrderStatus(orderId: number, to: OrderStatus, opts: 
     const data = await orderEmailData(orderId);
     const { statusLabel } = await import("@/lib/order-status");
     if (data) await emails.statusUpdate(data, to, statusLabel(to, data.method)).catch(() => undefined);
+    if (data) await pushToOrder(orderId, customerPush(data, to), { finished: !["preparing", "out_for_delivery"].includes(to) }).catch(() => undefined);
   }
   return res;
+}
+
+/** Phone alert text for the customer when the kitchen moves their order on. */
+function customerPush(o: OrderEmailData, to: OrderStatus) {
+  const first = o.name.trim().split(/\s+/)[0] ?? "";
+  const pickup = o.method === "pickup";
+  const msg: Partial<Record<OrderStatus, [string, string]>> = {
+    preparing: ["🔥 Your order is on the grill", `It's sizzling, ${first}! We're grilling it fresh right now.`],
+    out_for_delivery: pickup
+      ? ["🛍️ Ready for pickup!", `Come grab it while it's hot at ${siteConfig.pickup.street}.`]
+      : ["🛵 On its way to you!", o.tracking ? `Your rider: ${o.tracking}. Hot and fresh, coming right up.` : "Hot and fresh, coming right up."],
+    delivered: pickup ? ["😋 Enjoy your meal!", "Thanks for picking up. Tell us how it was!"] : ["😋 Delivered. Enjoy!", `Thank you for eating with us, ${first}.`],
+    cancelled: ["Your order was cancelled", "If you paid, your refund is on its way. Reply to our email if anything looks wrong."],
+    refunded: ["Your refund is on its way", "It can take a few working days to show in your account."],
+  };
+  const [title, body] = msg[to] ?? [STATUS_LABEL[to], ""];
+  const url = o.userId ? `/account/orders/${encodeURIComponent(o.number)}` : `/track?number=${encodeURIComponent(o.number)}&email=${encodeURIComponent(o.email)}`;
+  return { title, body, url, tag: `order-${o.number}` };
 }
 
 /** Variants that just came back into stock → notify waiting subscribers (called after stock edits). */

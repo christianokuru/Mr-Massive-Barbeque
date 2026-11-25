@@ -135,6 +135,7 @@ type OrderEmailData = {
   zoneName?: string | null;
   couponCode?: string | null;
   paidAt?: Date | null;
+  userId?: string | null;
   items: { name: string; size: string; qty: number; unitKobo: number }[];
 };
 

@@ -1,5 +1,5 @@
-/* Massive Barbeque service worker: offline fallback, static caching, admin push alerts. */
-const VERSION = "mb-v1";
+/* Massive Barbeque service worker: offline fallback, static caching, admin + customer order alerts. */
+const VERSION = "mb-v2";
 const STATIC = `${VERSION}-static`;
 const OFFLINE_URL = "/offline";
 
@@ -58,7 +58,10 @@ self.addEventListener("push", (event) => {
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",
       tag: data.tag,
-      data: { url: data.url || "/admin" },
+      // Same order, newer status: buzz again instead of silently replacing the old one.
+      renotify: !!data.tag,
+      vibrate: [120, 60, 120],
+      data: { url: data.url || "/" },
     }),
   );
 });
@@ -66,9 +69,9 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   // Only ever open same-origin URLs.
-  let target = "/admin";
+  let target = "/";
   try {
-    const u = new URL(event.notification.data && event.notification.data.url ? event.notification.data.url : "/admin", self.location.origin);
+    const u = new URL(event.notification.data && event.notification.data.url ? event.notification.data.url : "/", self.location.origin);
     if (u.origin === self.location.origin) target = u.pathname + u.search;
   } catch {}
   event.waitUntil(

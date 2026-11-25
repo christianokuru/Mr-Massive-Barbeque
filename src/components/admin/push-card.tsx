@@ -3,26 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { Bell, BellOff, Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
-
-function urlBase64ToUint8Array(base64: string) {
-  const padding = "=".repeat((4 - (base64.length % 4)) % 4);
-  const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
-  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
-}
-
-/** Explain push failures in plain steps (logged with console.warn, not error). */
-function explain(err: unknown): string {
-  const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
-  console.warn("[push]", msg);
-  if (/push service error|Registration failed/i.test(msg)) {
-    return "The browser couldn't reach its push service. In Brave, turn on Settings → Privacy → \"Use Google services for push messaging\". VPNs or ad-blocking DNS can also block fcm.googleapis.com.";
-  }
-  if (/denied|NotAllowedError|permission/i.test(msg)) {
-    return "Notifications are blocked for this site. Click the lock icon in the address bar → Notifications → Allow, then try again.";
-  }
-  if (/AbortError/i.test(msg)) return "The browser cancelled the subscription. Try again, or check notification settings for this browser.";
-  return msg;
-}
+import { explainPushError as explain, subscribeThisDevice } from "@/lib/push-client";
 
 type State = "loading" | "unsupported" | "ios-home" | "off" | "on" | "no-key";
 
@@ -55,11 +36,7 @@ export function PushCard({ vapidKey }: { vapidKey: string | null }) {
     start(async () => {
       setError(null);
       try {
-        const perm = await Notification.requestPermission();
-        if (perm !== "granted") throw new Error("NotAllowedError: permission " + perm);
-        const reg = (await navigator.serviceWorker.getRegistration()) ?? (await navigator.serviceWorker.register("/sw.js"));
-        await navigator.serviceWorker.ready;
-        const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(vapidKey!) });
+        const sub = await subscribeThisDevice(vapidKey!);
         const res = await fetch("/api/admin/push", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? `Server refused (${res.status})`);
         setState("on");

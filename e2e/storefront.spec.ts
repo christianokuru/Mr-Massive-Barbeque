@@ -178,6 +178,13 @@ test("order page updates live when the kitchen changes the status (no refresh)",
     await page.goto(`/track?number=${number}&email=${encodeURIComponent(email)}`);
     await expect(page.getByTestId("live-badge")).toBeVisible();
 
+    // Phone alerts: the button is offered, only the order's owner can sign up for them.
+    await expect(page.getByTestId("order-push-on")).toBeVisible();
+    const subscription = { endpoint: `https://fcm.googleapis.com/fcm/send/e2e-${uid()}`, keys: { p256dh: "p".repeat(40), auth: "a".repeat(16) } };
+    expect((await request.post(`/api/orders/${number}/push`, { data: { subscription } })).status()).toBe(404);
+    expect((await request.post(`/api/orders/${number}/push`, { data: { email: "someone-else@example.com", subscription } })).status()).toBe(404);
+    expect((await request.post(`/api/orders/${number}/push`, { data: { email, subscription } })).status()).toBe(200);
+
     // Kitchen marks it out for delivery with a rider.
     await sql`update "order" set status = 'out_for_delivery', tracking = 'Musa · 0803 000 1111', status_changed_at = now() where id = ${o.id}`;
     await sql`insert into order_event (order_id, type, to_status, actor) values (${o.id}, 'status', 'out_for_delivery', 'e2e')`;
@@ -188,6 +195,8 @@ test("order page updates live when the kitchen changes the status (no refresh)",
     await sql`update "order" set status = 'delivered', status_changed_at = now() where id = ${o.id}`;
     await expect(page.getByTestId("live-notice")).toContainText("Delivered", { timeout: 20_000 });
     await expect(page.getByTestId("live-badge")).toHaveCount(0);
+    // Finished orders take no new alerts (clean-up of old ones is covered in tests/push.test.ts).
+    expect((await request.post(`/api/orders/${number}/push`, { data: { email, subscription } })).status()).toBe(409);
   } finally {
     await sql`delete from "order" where id = ${o.id}`;
   }

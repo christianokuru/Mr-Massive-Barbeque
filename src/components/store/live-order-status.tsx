@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { OrderPushButton } from "./order-push-button";
 import { LIVE_MAX_AGE_MS, liveCheckSeconds, statusLabel, type OrderStatus } from "@/lib/order-status";
 
 const EMOJI: Partial<Record<OrderStatus, string>> = { preparing: "🔥", out_for_delivery: "🛵", delivered: "😋", cancelled: "", refunded: "" };
@@ -104,6 +105,7 @@ export function LiveOrderStatus({
           Live · updates automatically
         </p>
       ) : null}
+      {live ? <OrderPushButton number={number} email={email} /> : null}
     </div>
   );
 }

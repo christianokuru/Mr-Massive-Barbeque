@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
-import "./test-db";
+import "./test-db.ts";
 
 export default defineConfig({
   resolve: {

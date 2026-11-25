@@ -546,6 +546,25 @@ export const pushSubscription = pgTable("push_subscription", {
   createdAt: createdAt(),
 });
 
+/**
+ * Customer phone alerts for ONE order (works for guests too). Removed when the order finishes.
+ * The same device can follow several orders, so endpoint is unique per order, not globally.
+ */
+export const orderPush = pgTable(
+  "order_push",
+  {
+    id: serial().primaryKey(),
+    orderId: integer()
+      .notNull()
+      .references(() => order.id, { onDelete: "cascade" }),
+    endpoint: text().notNull(),
+    p256dh: text().notNull(),
+    auth: text().notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [uniqueIndex("order_push_order_endpoint_uniq").on(t.orderId, t.endpoint)],
+);
+
 /** Craving / reorder reminders already sent (one per order item product). */
 export const reminderLog = pgTable(
   "reminder_log",

@@ -28,7 +28,7 @@ export async function loadOrderView(orderId: number) {
  */
 export async function orderLiveState(number: string, opts: { email?: string | null; userId?: string | null; userEmail?: string | null }) {
   const [o] = await db
-    .select({ email: s.order.email, userId: s.order.userId, status: s.order.status, changed: s.order.statusChangedAt, tracking: s.order.tracking, createdAt: s.order.createdAt })
+    .select({ id: s.order.id, email: s.order.email, userId: s.order.userId, status: s.order.status, changed: s.order.statusChangedAt, tracking: s.order.tracking, createdAt: s.order.createdAt })
     .from(s.order)
     .where(eq(s.order.number, number));
   if (!o) return null;
@@ -38,7 +38,7 @@ export async function orderLiveState(number: string, opts: { email?: string | nu
     (!!opts.userEmail && opts.userEmail.toLowerCase() === email) ||
     (!!opts.email && opts.email.trim().toLowerCase() === email);
   if (!allowed) return null;
-  return { status: o.status as OrderStatus, v: liveVersion(o.status, o.changed, o.tracking), createdAt: o.createdAt.toISOString() };
+  return { id: o.id, status: o.status as OrderStatus, v: liveVersion(o.status, o.changed, o.tracking), createdAt: o.createdAt.toISOString() };
 }
 
 export function liveVersion(status: string, changed: Date, tracking: string | null) {

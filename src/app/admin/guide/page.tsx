@@ -334,6 +334,8 @@ const SECTIONS: Section[] = [
         <p>Do this on each device you want alerts on. Works on Chrome or Edge on a laptop, and Chrome on Android.</p>
         <p><strong>iPhone:</strong> open the website in Safari, tap the Share button → <strong>Add to Home Screen</strong>, open the store from that new icon, sign in, then turn alerts on.</p>
         <Note>If the card shows a red message, it tells you exactly what to change (usually a browser setting). Tapping a notification opens that order.</Note>
+        <p><strong>You also get an alert</strong> if a payment needs checking (for example, the amount paid didn&apos;t match).</p>
+        <p><strong>Customers get alerts too.</strong> On their order page they can tap <strong>Notify me on this phone</strong>. Each time you move their order on (On the grill, Out for delivery or Ready for pickup, Delivered), their phone buzzes. Alerts for an order stop once it&apos;s delivered or cancelled. Order pages also update by themselves, so customers never need to refresh.</p>
       </>
     ),
   },
