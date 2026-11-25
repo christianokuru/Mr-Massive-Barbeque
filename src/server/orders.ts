@@ -252,6 +252,11 @@ export async function orderEmailData(orderId: number): Promise<OrderEmailData | 
     addressLine: o.addressLine,
     area: o.area,
     tracking: o.tracking,
+    phone: o.phone,
+    notes: o.notes,
+    zoneName: o.zoneName,
+    couponCode: o.couponCode,
+    paidAt: o.paidAt,
     items: items.map((i) => ({ name: i.name, size: i.size, qty: i.qty, unitKobo: i.unitKobo })),
   };
 }
