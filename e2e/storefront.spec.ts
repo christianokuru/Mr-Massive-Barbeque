@@ -155,6 +155,8 @@ test("return from Paystack shows success even with the reference repeated in the
     // Paystack adds ?trxref=…&reference=… on top of our own ?reference=…
     await page.goto(`/checkout/complete?reference=${ref}&trxref=${ref}&reference=${ref}`);
     await expect(page.getByRole("heading", { name: /on the grill, Ada/ })).toBeVisible();
+    // Signed out: invited to sign up.
+    await expect(page.getByRole("link", { name: "Create an account for faster reorders" })).toBeVisible();
   } finally {
     await sql`delete from "order" where id = ${o.id}`;
   }

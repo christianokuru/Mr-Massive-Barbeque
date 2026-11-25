@@ -13,6 +13,7 @@ import { AutoRefresh } from "@/components/store/auto-refresh";
 import { clearCart, readCartId } from "@/server/cart";
 import { loadOrderView } from "@/server/order-view";
 import { settlePayment } from "@/server/orders";
+import { getSession } from "@/server/session";
 
 export const metadata: Metadata = { title: "Order status", robots: { index: false } };
 
@@ -42,6 +43,7 @@ async function Result({ searchParams }: { searchParams: PageProps<"/checkout/com
   }
   const o = await loadOrderView(pay.orderId);
   if (!o) return null;
+  const signedIn = !!(await getSession());
 
   const paid = result.outcome === "paid" || result.outcome === "already_paid" || (o.paidAt && o.status !== "pending_payment");
   if (paid) {
@@ -93,7 +95,11 @@ async function Result({ searchParams }: { searchParams: PageProps<"/checkout/com
       </div>
       <div className="flex flex-wrap gap-3">
         <Link href={`/track?number=${encodeURIComponent(o.number)}&email=${encodeURIComponent(o.email)}`} className="inline-flex h-12 items-center rounded-full border-2 border-oxblood px-6 font-bold text-oxblood">Track this order</Link>
-        <Link href="/sign-up" className="inline-flex h-12 items-center px-2 font-bold underline">Create an account for faster reorders</Link>
+        {signedIn ? (
+          <Link href="/account/orders" className="inline-flex h-12 items-center px-2 font-bold underline">See all my orders</Link>
+        ) : (
+          <Link href="/sign-up" className="inline-flex h-12 items-center px-2 font-bold underline">Create an account for faster reorders</Link>
+        )}
       </div>
     </div>
   );

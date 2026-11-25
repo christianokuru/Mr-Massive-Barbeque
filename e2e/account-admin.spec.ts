@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { E2E_ADMIN } from "../playwright.config";
-import { declineCookies, e2eEmail, noHorizontalScroll, resetRateLimits, signIn, signUpVerified, sql } from "./utils";
+import { declineCookies, e2eEmail, noHorizontalScroll, resetRateLimits, signIn, signUpVerified, sql, uid } from "./utils";
 
 const PW = "Grill-Master-2026!";
 
@@ -24,6 +24,19 @@ test.describe("customer account", () => {
     await page.waitForURL(/\/account$/);
     if (isMobile) await expect(page.getByTestId("account-tabbar")).toBeVisible();
     expect(await noHorizontalScroll(page)).toBe(true);
+
+    // After paying, a signed-in customer isn't asked to create an account.
+    const number = `MB-E2E-${uid()}`;
+    const [o] = await sql`insert into "order" (number, email, phone, name, method, status, subtotal_kobo, total_kobo, payment_expires_at, paid_at)
+      values (${number}, ${email}, '+2348031234567', 'Ada Okafor', 'pickup', 'confirmed', 1200000, 1200000, now() + interval '1 hour', now()) returning id`;
+    await sql`insert into payment (order_id, reference, amount_kobo, status) values (${o.id}, ${number + "-REF"}, 1200000, 'success')`;
+    try {
+      await page.goto(`/checkout/complete?reference=${number}-REF`);
+      await expect(page.getByRole("link", { name: "See all my orders" })).toBeVisible();
+      await expect(page.getByText("Create an account for faster reorders")).toHaveCount(0);
+    } finally {
+      await sql`delete from "order" where id = ${o.id}`;
+    }
 
     // Review blocked for non-buyers
     await page.goto("/menu/grilled-croaker");
