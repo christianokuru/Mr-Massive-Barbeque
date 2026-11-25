@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { formatNaira } from "@/lib/money";
+import { siteConfig } from "@/lib/site";
 import { statusLabel, TRACKER_STEPS, trackerIndex, type OrderStatus } from "@/lib/order-status";
 import { cn } from "@/lib/utils";
 import type { OrderView } from "@/server/order-view";
@@ -37,7 +38,7 @@ export function OrderDetails({ o, showTimeline = false }: { o: NonNullable<Order
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm text-muted-foreground">Order {o.number} · {formatDate(o.createdAt)}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{o.method === "pickup" ? "Pickup" : `Delivery to ${o.addressLine}, ${o.area} (${o.zoneName ?? ""})`}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{o.method === "pickup" ? `Pickup at ${siteConfig.pickup.full}` : `Delivery to ${o.addressLine}, ${o.area} (${o.zoneName ?? ""})`}</p>
         </div>
         <StatusBadge status={o.status} method={o.method} />
       </div>

@@ -124,7 +124,7 @@ export const emails = {
         body: `<p>Order <strong>${esc(o.number)}</strong> is paid and confirmed.</p>${itemsTable(o)}${
           o.method === "delivery"
             ? `<p>Delivering to: ${esc(o.addressLine ?? "")}, ${esc(o.area ?? "")}</p>`
-            : "<p>We'll message you when it's ready for pickup.</p>"
+            : `<p>Pick up at <strong>${esc(siteConfig.pickup.full)}</strong>. We'll message you when it's ready.</p>`
         }`,
         cta: { label: "Track your order", url: trackUrl(o) },
       }),
@@ -145,7 +145,7 @@ export const emails = {
     const copy: Record<string, string> = {
       out_for_delivery:
         o.method === "pickup"
-          ? "<p>Your order is ready. Come grab it while it's hot.</p>"
+          ? `<p>Your order is ready. Come grab it while it's hot at ${esc(siteConfig.pickup.full)}.</p>`
           : `<p>Your order is on its way.${o.tracking ? ` Rider: ${esc(o.tracking)}.` : ""}</p>`,
       delivered: "<p>Your order has been delivered. Enjoy, and tell us how it was.</p>",
       cancelled: "<p>Your order has been cancelled. If you paid, a refund will follow.</p>",

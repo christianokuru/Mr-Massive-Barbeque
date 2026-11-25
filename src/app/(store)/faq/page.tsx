@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/store/info-page";
 import { jsonLd } from "@/lib/csv";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "FAQ: delivery, payment and orders",
@@ -13,7 +14,7 @@ const FAQS: [string, string][] = [
   ["How long does delivery take?", "Everything is grilled to order, so most orders arrive in 40–120 minutes depending on your area and traffic. You can track every step from your order page."],
   ["How do I pay?", "Online through Paystack: debit card, bank transfer or USSD. Your order is held for 60 minutes while you complete payment."],
   ["Is there free delivery?", "Yes. Orders above the free-delivery amount for your zone ship free. Your bag shows how close you are."],
-  ["Can I pick up instead?", "Yes, pickup is always free. Choose Pickup at checkout and we'll message you when it's ready."],
+  ["Can I pick up instead?", `Yes, pickup is always free. Choose Pickup at checkout and collect from ${siteConfig.pickup.full}. We'll message you when it's ready.`],
   ["How spicy is the food?", "Each item shows a heat rating from No heat to Extra hot. Add a note at checkout if you want it milder or hotter and we'll do our best."],
   ["Can I order for a party or office?", "Absolutely. Order Biggie fish, family packs and combos, add the time you need it in the notes, or message us on WhatsApp for very large orders."],
   ["What if something is wrong with my order?", "Message us within 2 hours of delivery with your order number and a photo. See our Refunds page for details."],

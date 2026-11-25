@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { Bike, Loader2, Lock, Store } from "lucide-react";
 import { placeOrder, quoteCheckout, saveCheckoutContact, type QuoteView } from "@/app/actions/checkout";
 import { track } from "@/lib/analytics";
+import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 type Zone = { id: number; name: string; areas: string; fee: string; eta: string };
@@ -192,7 +193,10 @@ export function CheckoutForm({
               ) : null}
             </>
           ) : (
-            <p className="rounded-2xl bg-sand p-4 text-sm">We&apos;ll WhatsApp you the pickup point in Lagos and message you when your order is ready.</p>
+            <p className="rounded-2xl bg-sand p-4 text-sm" data-testid="pickup-address">
+              <span className="block font-bold">Pick up at {siteConfig.pickup.full}</span>
+              We&apos;ll message you when your order is ready.
+            </p>
           )}
           <Field label="Notes for the kitchen (optional)">
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={300} rows={2} placeholder="Extra pepper, no onions, gate code…" className="w-full rounded-lg border border-input bg-white p-3" />

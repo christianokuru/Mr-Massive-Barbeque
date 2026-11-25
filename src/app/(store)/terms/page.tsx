@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/store/info-page";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Terms of service", description: "The terms for ordering from Massive Barbeque in Lagos.", alternates: { canonical: "/terms" } };
 
@@ -17,7 +18,7 @@ export default function Terms() {
       <h2>Allergies</h2>
       <p>Our kitchen handles fish, peppers and common allergens. Tell us about allergies in your order notes, but we can&apos;t guarantee an allergen-free kitchen.</p>
       <h2>Contact</h2>
-      <p><a href="mailto:info@massivebarbeque.com">info@massivebarbeque.com</a></p>
+      <p><a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a></p>
     </InfoPage>
   );
 }

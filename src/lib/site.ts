@@ -8,6 +8,14 @@ export const siteConfig = {
   locale: "en_NG",
   timeZone: "Africa/Lagos",
   currency: "NGN",
+  email: "massivebarbecue@gmail.com",
+  /** Pickup point (also used for LocalBusiness structured data). */
+  pickup: {
+    street: "54 Ferguson Osagie Street",
+    area: "Onikanga, Ayobo",
+    city: "Lagos",
+    full: "54 Ferguson Osagie Street, Onikanga, Ayobo, Lagos",
+  },
   social: {
     instagram: "https://www.instagram.com/massivebarbeque",
     x: "https://twitter.com/massivebarbeque",

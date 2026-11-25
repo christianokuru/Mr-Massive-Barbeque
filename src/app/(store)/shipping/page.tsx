@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/store/info-page";
 import { formatNaira } from "@/lib/money";
+import { siteConfig } from "@/lib/site";
 import { getZones } from "@/server/catalogue";
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default async function Shipping() {
         </table>
       </div>
       <h2>Pickup</h2>
-      <p>Choose Pickup at checkout. It&apos;s free, and we&apos;ll WhatsApp you the pickup point and let you know when your order is ready.</p>
+      <p>Choose Pickup at checkout. It&apos;s free. Collect from <strong>{siteConfig.pickup.full}</strong>; we&apos;ll let you know when your order is ready.</p>
       <h2>Your area isn&apos;t listed?</h2>
       <p>Message us on WhatsApp before ordering and we&apos;ll tell you if we can reach you.</p>
     </InfoPage>

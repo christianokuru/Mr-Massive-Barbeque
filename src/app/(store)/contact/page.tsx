@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Mail, MessageCircle, Package } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Package } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { getSettings } from "@/server/catalogue";
 
@@ -21,9 +21,13 @@ export default async function Contact() {
             <span><span className="block text-subheading font-bold">WhatsApp</span><span className="text-muted-foreground">Fastest for orders and parties</span></span>
           </a>
         ) : null}
-        <a href="mailto:info@massivebarbeque.com" className={card}>
+        <a href={`mailto:${siteConfig.email}`} className={card}>
           <Mail className="size-8 text-oxblood" />
-          <span><span className="block text-subheading font-bold">info@massivebarbeque.com</span><span className="text-muted-foreground">We reply within a day</span></span>
+          <span><span className="block text-subheading font-bold">{siteConfig.email}</span><span className="text-muted-foreground">We reply within a day</span></span>
+        </a>
+        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.pickup.full)}`} target="_blank" rel="noopener noreferrer" className={card}>
+          <MapPin className="size-8 text-oxblood" />
+          <span><span className="block text-subheading font-bold">Pickup</span><span className="text-muted-foreground">{siteConfig.pickup.full}</span></span>
         </a>
         <Link href="/track" className={card}>
           <Package className="size-8 text-oxblood" />

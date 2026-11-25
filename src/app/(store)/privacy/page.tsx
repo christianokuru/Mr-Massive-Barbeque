@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CookieSettingsLink } from "@/components/store/consent";
 import { InfoPage } from "@/components/store/info-page";
+import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Privacy policy", description: "How Massive Barbeque collects, uses and protects your personal data, in line with the Nigeria Data Protection Act.", alternates: { canonical: "/privacy" } };
 
@@ -29,7 +30,7 @@ export default function Privacy() {
       <h2>Your rights</h2>
       <p>You can access, download, correct or delete your data. Signed-in customers can do this themselves in <Link href="/account/settings#privacy">Account → Settings → Privacy</Link>: turn marketing on or off, download your data, or delete your account. Orders are kept for accounting, without your account link.</p>
       <h2>Contact</h2>
-      <p>Questions or requests: <a href="mailto:info@massivebarbeque.com">info@massivebarbeque.com</a>.</p>
+      <p>Questions or requests: <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.</p>
     </InfoPage>
   );
 }

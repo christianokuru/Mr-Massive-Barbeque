@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/admin/print-button";
 import { formatDateTime } from "@/lib/format";
+import { siteConfig } from "@/lib/site";
 import { loadOrderView } from "@/server/order-view";
 import { requireAdmin } from "@/server/session";
 
@@ -35,7 +36,7 @@ export default async function PackingSlip({ params }: PageProps<"/admin/orders/[
         </div>
         <div>
           <p className="font-bold uppercase">{o.method === "pickup" ? "Pickup" : "Deliver to"}</p>
-          {o.method === "delivery" ? <p>{o.addressLine}, {o.area}<br />{o.zoneName}</p> : <p>Customer collects</p>}
+          {o.method === "delivery" ? <p>{o.addressLine}, {o.area}<br />{o.zoneName}</p> : <p>Customer collects at {siteConfig.pickup.full}</p>}
           {o.tracking ? <p>Rider: {o.tracking}</p> : null}
         </div>
       </div>
