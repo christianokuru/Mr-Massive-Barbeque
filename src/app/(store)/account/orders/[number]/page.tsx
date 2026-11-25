@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { BuyAgainButton } from "@/components/account/account-ui";
+import { LiveOrderStatus } from "@/components/store/live-order-status";
 import { OrderDetails } from "@/components/store/order-details";
 import { RetryPayButton } from "@/components/store/retry-pay";
 import { getMyOrderByNumber } from "@/server/account";
-import { loadOrderView } from "@/server/order-view";
+import { liveVersion, loadOrderView } from "@/server/order-view";
 import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Order details", robots: { index: false } };
@@ -25,6 +26,7 @@ export default async function OrderPage({ params }: PageProps<"/account/orders/[
     <div className="flex flex-col gap-6">
       <Link href="/account/orders" className="inline-flex w-fit items-center gap-1 text-sm font-bold"><ChevronLeft className="size-4" /> All orders</Link>
       <h1 className="text-[length:clamp(28px,8vw,40px)] leading-[0.9] md:text-heading-lg">Order {o.number}</h1>
+      <LiveOrderStatus number={o.number} status={o.status} v={liveVersion(o.status, o.statusChangedAt, o.tracking)} method={o.method} createdAt={o.createdAt.toISOString()} />
       <div className="rounded-card bg-white p-5">
         <OrderDetails o={o} showTimeline />
       </div>

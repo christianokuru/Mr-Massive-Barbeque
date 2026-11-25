@@ -93,3 +93,23 @@ export function statusTone(status: OrderStatus): "neutral" | "warn" | "good" | "
       return "bad";
   }
 }
+
+/**
+ * Live order updates: how often an open order page checks for a new status.
+ * Fast when the customer is waiting (just paid, on the way / ready), slow while it grills,
+ * and never for finished or unpaid orders. null = stop checking.
+ */
+export function liveCheckSeconds(status: OrderStatus): number | null {
+  switch (status) {
+    case "confirmed":
+    case "out_for_delivery":
+      return 10;
+    case "preparing":
+      return 30;
+    default:
+      return null;
+  }
+}
+
+/** Stop live checks this long after the order was placed (forgotten tabs). */
+export const LIVE_MAX_AGE_MS = 4 * 60 * 60 * 1000;

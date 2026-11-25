@@ -6,12 +6,13 @@ import { eq } from "drizzle-orm";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { db } from "@/db";
 import * as s from "@/db/schema";
+import { LiveOrderStatus } from "@/components/store/live-order-status";
 import { OrderDetails } from "@/components/store/order-details";
 import { PurchaseTracker } from "@/components/store/purchase-tracker";
 import { RetryPayButton } from "@/components/store/retry-pay";
 import { AutoRefresh } from "@/components/store/auto-refresh";
 import { clearCart, readCartId } from "@/server/cart";
-import { loadOrderView } from "@/server/order-view";
+import { liveVersion, loadOrderView } from "@/server/order-view";
 import { settlePayment } from "@/server/orders";
 import { getSession } from "@/server/session";
 
@@ -90,6 +91,7 @@ async function Result({ searchParams }: { searchParams: PageProps<"/checkout/com
           <Link href="/cart" className="inline-flex h-12 items-center rounded-full bg-bonnet px-6 font-bold">Back to my bag</Link>
         </div>
       )}
+      {paid ? <LiveOrderStatus number={o.number} email={o.email} status={o.status} v={liveVersion(o.status, o.statusChangedAt, o.tracking)} method={o.method} createdAt={o.createdAt.toISOString()} /> : null}
       <div className="rounded-card border border-line p-5">
         <OrderDetails o={o} />
       </div>

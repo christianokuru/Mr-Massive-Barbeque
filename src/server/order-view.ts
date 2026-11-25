@@ -21,3 +21,26 @@ export async function loadOrderView(orderId: number) {
   const payable = o.status === "pending_payment" && +o.paymentExpiresAt > Date.now();
   return { ...o, status: o.status as OrderStatus, items, events, reached, payable };
 }
+
+/**
+ * Tiny status snapshot for live order pages. Access: the signed-in owner, or the order's email
+ * (the same proof the public tracking page uses). `v` changes whenever anything shown changes.
+ */
+export async function orderLiveState(number: string, opts: { email?: string | null; userId?: string | null; userEmail?: string | null }) {
+  const [o] = await db
+    .select({ email: s.order.email, userId: s.order.userId, status: s.order.status, changed: s.order.statusChangedAt, tracking: s.order.tracking, createdAt: s.order.createdAt })
+    .from(s.order)
+    .where(eq(s.order.number, number));
+  if (!o) return null;
+  const email = o.email.toLowerCase();
+  const allowed =
+    (!!opts.userId && o.userId === opts.userId) ||
+    (!!opts.userEmail && opts.userEmail.toLowerCase() === email) ||
+    (!!opts.email && opts.email.trim().toLowerCase() === email);
+  if (!allowed) return null;
+  return { status: o.status as OrderStatus, v: liveVersion(o.status, o.changed, o.tracking), createdAt: o.createdAt.toISOString() };
+}
+
+export function liveVersion(status: string, changed: Date, tracking: string | null) {
+  return `${status}|${changed.getTime()}|${tracking ?? ""}`;
+}

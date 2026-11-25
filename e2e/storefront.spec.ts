@@ -161,3 +161,34 @@ test("return from Paystack shows success even with the reference repeated in the
     await sql`delete from "order" where id = ${o.id}`;
   }
 });
+
+test("order page updates live when the kitchen changes the status (no refresh)", async ({ page, request }) => {
+  await declineCookies(page);
+  const email = e2eEmail("live");
+  const number = `MB-E2E-${uid()}`.slice(0, 20);
+  const [o] = await sql`insert into "order" (number, email, phone, name, method, status, subtotal_kobo, total_kobo, payment_expires_at, paid_at)
+    values (${number}, ${email}, '+2348031234567', 'Live Tester', 'delivery', 'confirmed', 1200000, 1200000, now() + interval '1 hour', now()) returning id`;
+  try {
+    // The status endpoint only answers with the order's email (or to the signed-in owner).
+    expect((await request.get(`/api/orders/${number}/status`)).status()).toBe(404);
+    expect((await request.get(`/api/orders/${number}/status?email=someone-else@example.com`)).status()).toBe(404);
+    const ok = await request.get(`/api/orders/${number}/status?email=${encodeURIComponent(email)}`);
+    expect(await ok.json()).toMatchObject({ status: "confirmed" });
+
+    await page.goto(`/track?number=${number}&email=${encodeURIComponent(email)}`);
+    await expect(page.getByTestId("live-badge")).toBeVisible();
+
+    // Kitchen marks it out for delivery with a rider.
+    await sql`update "order" set status = 'out_for_delivery', tracking = 'Musa · 0803 000 1111', status_changed_at = now() where id = ${o.id}`;
+    await sql`insert into order_event (order_id, type, to_status, actor) values (${o.id}, 'status', 'out_for_delivery', 'e2e')`;
+    await expect(page.getByTestId("live-notice")).toContainText("Out for delivery", { timeout: 20_000 });
+    await expect(page.getByText("Musa · 0803 000 1111")).toBeVisible();
+
+    // Delivered: the page updates once more, then stops checking.
+    await sql`update "order" set status = 'delivered', status_changed_at = now() where id = ${o.id}`;
+    await expect(page.getByTestId("live-notice")).toContainText("Delivered", { timeout: 20_000 });
+    await expect(page.getByTestId("live-badge")).toHaveCount(0);
+  } finally {
+    await sql`delete from "order" where id = ${o.id}`;
+  }
+});

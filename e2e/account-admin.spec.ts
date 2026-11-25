@@ -26,7 +26,7 @@ test.describe("customer account", () => {
     expect(await noHorizontalScroll(page)).toBe(true);
 
     // After paying, a signed-in customer isn't asked to create an account.
-    const number = `MB-E2E-${uid()}`;
+    const number = `MB-E2E-${uid()}`.slice(0, 20);
     const [o] = await sql`insert into "order" (number, email, phone, name, method, status, subtotal_kobo, total_kobo, payment_expires_at, paid_at)
       values (${number}, ${email}, '+2348031234567', 'Ada Okafor', 'pickup', 'confirmed', 1200000, 1200000, now() + interval '1 hour', now()) returning id`;
     await sql`insert into payment (order_id, reference, amount_kobo, status) values (${o.id}, ${number + "-REF"}, 1200000, 'success')`;
@@ -34,6 +34,8 @@ test.describe("customer account", () => {
       await page.goto(`/checkout/complete?reference=${number}-REF`);
       await expect(page.getByRole("link", { name: "See all my orders" })).toBeVisible();
       await expect(page.getByText("Create an account for faster reorders")).toHaveCount(0);
+      // Signed-in owner gets live status without the email in the link.
+      expect((await page.request.get(`/api/orders/${number}/status`)).status()).toBe(200);
     } finally {
       await sql`delete from "order" where id = ${o.id}`;
     }

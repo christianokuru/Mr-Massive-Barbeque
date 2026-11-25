@@ -4,11 +4,12 @@ import { Suspense } from "react";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import * as s from "@/db/schema";
+import { LiveOrderStatus } from "@/components/store/live-order-status";
 import { OrderDetails } from "@/components/store/order-details";
 import { RetryPayButton } from "@/components/store/retry-pay";
 import { TrackForm } from "@/components/store/track-form";
 import { emailSchema } from "@/lib/validation";
-import { loadOrderView } from "@/server/order-view";
+import { liveVersion, loadOrderView } from "@/server/order-view";
 import { enforceRateLimit } from "@/server/rate-limit";
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ async function Lookup({ searchParams }: { searchParams: PageProps<"/track">["sea
   }
   return (
     <div className="flex flex-col gap-6">
+      <LiveOrderStatus number={o.number} email={o.email} status={o.status} v={liveVersion(o.status, o.statusChangedAt, o.tracking)} method={o.method} createdAt={o.createdAt.toISOString()} />
       <div className="rounded-card border border-line p-5" data-testid="track-result">
         <OrderDetails o={o} />
       </div>
