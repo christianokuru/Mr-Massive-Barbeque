@@ -9,6 +9,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Abandoned bags" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Abandoned() {
   await requireAdmin();
   const rows = await abandonedBags();

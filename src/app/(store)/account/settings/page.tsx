@@ -9,6 +9,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Settings", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 function Card({ title, children, id }: { title: string; children: React.ReactNode; id?: string }) {
   return (
     <section id={id} className="rounded-card bg-white p-5 md:p-6">

@@ -10,6 +10,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Edit product" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function EditProduct({ params }: PageProps<"/admin/products/[id]">) {
   await requireAdmin();
   const { id } = await params;

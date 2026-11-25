@@ -17,6 +17,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Order" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function AdminOrder({ params }: PageProps<"/admin/orders/[id]">) {
   await requireAdmin();
   const { id } = await params;

@@ -8,6 +8,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Addresses", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function AddressesPage() {
   const session = await requireUser("/account/addresses");
   const [rows, zones] = await Promise.all([

@@ -148,8 +148,8 @@ export async function listCustomers(q?: string) {
       email: s.user.email,
       verified: s.user.emailVerified,
       createdAt: s.user.createdAt,
-      orders: sql<number>`(select count(*) from "order" o where (o.user_id = ${s.user.id} or o.email = lower(${s.user.email})) and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
-      spent: sql<number>`(select coalesce(sum(total_kobo),0) from "order" o where (o.user_id = ${s.user.id} or o.email = lower(${s.user.email})) and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
+      orders: sql<number>`(select count(*) from "order" o where (o.user_id = "user"."id" or o.email = lower("user"."email")) and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
+      spent: sql<number>`(select coalesce(sum(total_kobo),0) from "order" o where (o.user_id = "user"."id" or o.email = lower("user"."email")) and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
     })
     .from(s.user)
     .where(like ? or(ilike(s.user.name, like), ilike(s.user.email, like)) : undefined)
@@ -196,8 +196,8 @@ export async function couponsWithRevenue() {
   return db
     .select({
       c: s.coupon,
-      orders: sql<number>`(select count(*) from "order" o where o.coupon_id = ${s.coupon.id} and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
-      revenue: sql<number>`(select coalesce(sum(total_kobo),0) from "order" o where o.coupon_id = ${s.coupon.id} and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
+      orders: sql<number>`(select count(*) from "order" o where o.coupon_id = "coupon"."id" and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
+      revenue: sql<number>`(select coalesce(sum(total_kobo),0) from "order" o where o.coupon_id = "coupon"."id" and o.status in ('confirmed','preparing','out_for_delivery','delivered'))`.mapWith(Number),
     })
     .from(s.coupon)
     .where(sql`${s.coupon.source} <> 'referral'`)

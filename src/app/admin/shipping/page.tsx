@@ -7,6 +7,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Delivery zones" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Shipping() {
   await requireAdmin();
   const zones = await db.select().from(s.shippingZone).orderBy(asc(s.shippingZone.sort), asc(s.shippingZone.id));

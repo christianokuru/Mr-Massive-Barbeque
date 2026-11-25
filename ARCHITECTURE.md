@@ -30,19 +30,27 @@ Single currency: **NGN only** (amounts stored in **kobo**). The currency toggle 
 ```
 src/
   app/
-    (store)/            storefront: home, menu, category, occasion, product, combos, cart, checkout, track, quiz, journal, info pages
-    (auth)/             sign-in, sign-up, forgot, reset (shared AuthShell)
-    account/            customer dashboard (instant = false)
+    (store)/            storefront: home, menu, menu/[slug], category, occasion, combos, cart, checkout(+complete), track,
+                        quiz(+results), journal, about/faq/shipping/returns/privacy/terms/contact
+    (store)/account/    customer dashboard (instant = false on layout + pages)
+    (auth)/             sign-in, sign-up, forgot-password, reset-password (shared AuthShell)
     admin/              admin dashboard (instant = false, loading.tsx, requireAdmin everywhere)
-    api/                auth handler, paystack webhook, cron, uploads, push, exports
-    sitemap.ts robots.ts manifest.ts opengraph-image.tsx
+    api/                auth, paystack/webhook, cron/daily, admin/{upload,push,orders.csv,subscribers.csv}
+    auth/after          post sign-in hop (admin → /admin, customer → safe next)
+    actions/            server actions: cart, checkout, account, engage, growth, quiz, admin
+    sitemap.ts robots.ts manifest.ts opengraph-image.tsx not-found.tsx error.tsx offline/
+  proxy.ts              real 404 for non-admin /admin + unknown catalogue slugs; /account sign-in redirect
   components/ui/        shadcn primitives (brand-styled)
   components/           shared store/admin/account components
   db/                   schema.ts (+ auth-schema.ts generated), index.ts (Pool)
-  lib/                  site.ts (client-safe), auth.ts, money.ts, order-status.ts, rate-limit.ts, storage.ts, email.ts, push.ts, paystack.ts
-  server/               "server-only" queries + actions per domain
+  lib/                  client-safe: site, money, order-status, validation, format, csv, analytics, auth (server), auth-client
+  server/               "server-only": session, catalogue (use cache), cart, pricing, orders (checkout + settlement),
+                        account, admin, cron, storage, email, paystack, push, rate-limit, slugs, order-view, reviews
+  content/              journal articles
 drizzle/                SQL migrations (drizzle-kit generate → migrate)
-tests/ e2e/             Vitest integration · Playwright E2E
+scripts/seed.ts         idempotent catalogue seed
+tests/                  Vitest integration (real DB)
+e2e/                    Playwright (mobile + desktop) incl. security probes
 ```
 
 ## Business adaptation (food, not cosmetics)
@@ -148,5 +156,6 @@ Per-page metadata + canonical, OG/Twitter, generated OG image, `metadataBase`. J
 
 ## Tests
 
-- **Vitest (real DB):** concurrent stock reservation, idempotent settlement, amount/currency mismatch, failed/expired/late/duplicate payments, coupon + referral rules, upload validation, push allowlist + admin-only delivery, running-low + review prompts scoping, CSV neutralising.
-- **Playwright (mobile first, then desktop):** full purchase journey, account, admin, consent gating, 390px no horizontal scroll, security probes (webhook/cron 401, admin 404, open redirect).
+- **Vitest (real DB, 24 tests):** concurrent stock reservation (no oversell), expiry returns stock, idempotent settlement + timeline event, amount/currency mismatch, failed payment, late payment (accepted / flagged), duplicate payment, coupon once-per-email + max uses + release on expiry, referral (self blocked, rewarded once, first order only), server-side delivery/free-delivery, upload validation (fake/small rejected, EXIF stripped, WebP, immutable), push SSRF allowlist + admin-only delivery + 410 pruning, running-low/review prompts scoping (guest orders with same email included, others never), CSV/LIKE/JSON-LD escaping, safe `next`, phone normalisation.
+- **Playwright (31 tests, mobile + desktop):** 390px no horizontal scroll, search/filters/empty states, mobile menu, bag (triple-tap, combo, qty), checkout validation, WELCOME10, Paystack redirect, no-keys graceful failure (order cancelled, stock returned, checked in DB), track order, newsletter, quiz, consent gating, customer flow (weak password, verification, favourites, addresses, rewards, marketing toggle, export, delete with wrong/right password), admin (lands on /admin, range, phone search, CSV, settings validation + banner on storefront, fake upload rejected), security probes (webhook/cron 401, admin 404, account redirect, open redirect, real 404s, headers).
+- Dev-mode crawl of store, account and admin shows no Next.js instant-navigation insights.

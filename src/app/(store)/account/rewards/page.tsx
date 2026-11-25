@@ -11,6 +11,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Rewards", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 function maskEmail(e: string) {
   const [u, d] = e.split("@");
   return `${u.slice(0, 2)}${"•".repeat(Math.max(1, u.length - 2))}@${d}`;

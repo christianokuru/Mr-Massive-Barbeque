@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { ArrowRight } from "lucide-react";
 import { ARTICLES, getArticle } from "@/content/articles";
 import { jsonLd } from "@/lib/csv";
@@ -25,7 +26,15 @@ export async function generateMetadata({ params }: PageProps<"/journal/[slug]">)
   };
 }
 
-export default async function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
+export default function ArticlePage({ params }: PageProps<"/journal/[slug]">) {
+  return (
+    <Suspense fallback={<div className="container-page min-h-[70vh] max-w-3xl py-16" />}>
+      <ArticleBody params={params} />
+    </Suspense>
+  );
+}
+
+async function ArticleBody({ params }: { params: PageProps<"/journal/[slug]">["params"] }) {
   const a = getArticle((await params).slug);
   if (!a) notFound();
   const ld = {

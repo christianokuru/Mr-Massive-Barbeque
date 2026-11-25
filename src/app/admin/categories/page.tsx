@@ -7,6 +7,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Categories" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Categories() {
   await requireAdmin();
   const rows = await db

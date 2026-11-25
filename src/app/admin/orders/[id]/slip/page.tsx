@@ -8,6 +8,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Packing slip" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 /** Printable packing slip: no prices. Print CSS hides the admin chrome. */
 export default async function PackingSlip({ params }: PageProps<"/admin/orders/[id]/slip">) {
   await requireAdmin();

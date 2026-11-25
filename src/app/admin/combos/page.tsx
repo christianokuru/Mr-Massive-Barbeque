@@ -8,6 +8,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Combos" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Combos() {
   await requireAdmin();
   const [combos, items, variants] = await Promise.all([

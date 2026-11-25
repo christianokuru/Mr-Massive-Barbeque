@@ -15,6 +15,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Customer" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Customer({ params }: PageProps<"/admin/customers/[id]">) {
   await requireAdmin();
   const { id } = await params;

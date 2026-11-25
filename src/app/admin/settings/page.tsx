@@ -7,6 +7,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Settings" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Settings() {
   await requireAdmin();
   const [row] = await db.select().from(s.storeSettings).where(eq(s.storeSettings.id, 1));

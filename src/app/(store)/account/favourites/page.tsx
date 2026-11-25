@@ -9,6 +9,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Saved", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function FavouritesPage() {
   const session = await requireUser("/account/favourites");
   const [ids, cards] = await Promise.all([myFavourites(session.user.id), getAllProductCards()]);

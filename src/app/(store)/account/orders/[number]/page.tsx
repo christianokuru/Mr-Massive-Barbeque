@@ -11,6 +11,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Order details", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function OrderPage({ params }: PageProps<"/account/orders/[number]">) {
   const { number } = await params;
   const session = await requireUser(`/account/orders/${number}`);

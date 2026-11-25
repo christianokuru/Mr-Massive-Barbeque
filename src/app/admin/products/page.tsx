@@ -13,6 +13,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Products" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function AdminProducts({ searchParams }: PageProps<"/admin/products">) {
   await requireAdmin();
   const sp = await searchParams;

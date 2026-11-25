@@ -12,6 +12,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Orders" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 const str = (v: unknown) => (typeof v === "string" ? v : undefined);
 
 export default async function AdminOrders({ searchParams }: PageProps<"/admin/orders">) {

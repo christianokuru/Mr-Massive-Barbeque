@@ -10,6 +10,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 const RANGES = [7, 30, 90] as const;
 
 function Stat({ label, value, sub, href }: { label: string; value: string; sub?: string; href?: string }) {

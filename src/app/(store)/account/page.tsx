@@ -14,6 +14,9 @@ import { requireUser } from "@/server/session";
 
 export const metadata: Metadata = { title: "Your account", robots: { index: false } };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 const SPICE: Record<string, string> = { mild: "Mild", hot: "Hot", extra_hot: "Extra hot" };
 
 export default async function AccountHome() {

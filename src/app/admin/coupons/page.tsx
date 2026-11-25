@@ -8,6 +8,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Coupons" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Coupons() {
   await requireAdmin();
   const rows = await couponsWithRevenue();

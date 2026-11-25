@@ -11,6 +11,9 @@ import { requireAdmin } from "@/server/session";
 
 export const metadata: Metadata = { title: "Reviews" };
 
+// Auth-gated, per-request data: not expected to navigate instantly.
+export const instant = false;
+
 export default async function Reviews({ searchParams }: PageProps<"/admin/reviews">) {
   await requireAdmin();
   const sp = await searchParams;

@@ -99,7 +99,7 @@ export async function getCartLines(cartId: string | null): Promise<CartLine[]> {
           productSlug: s.product.slug,
           productName: s.product.name,
           status: s.product.status,
-          imageUrl: sql<string | null>`(select url from product_image pi where pi.product_id = ${s.product.id} order by pi.sort, pi.id limit 1)`,
+          imageUrl: sql<string | null>`(select url from product_image pi where pi.product_id = "product"."id" order by pi.sort, pi.id limit 1)`,
         })
         .from(s.productVariant)
         .innerJoin(s.product, eq(s.product.id, s.productVariant.productId))
