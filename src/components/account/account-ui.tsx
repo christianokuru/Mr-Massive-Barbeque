@@ -19,7 +19,7 @@ import { PasswordField, inputClass } from "@/components/auth/password-field";
 import { useConfirm } from "@/components/confirm";
 import { authClient } from "@/lib/auth-client";
 import { authErrorMessage } from "@/lib/auth-errors";
-import { PASSWORD_MIN, PASSWORD_TOO_WEAK } from "@/lib/validation";
+import { PASSWORD_MIN, PASSWORD_TOO_WEAK, PHONE_HINT } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 /** Run an action and toast its result. Returns the result. */
@@ -179,7 +179,7 @@ export function AddressManager({ addresses, zones }: { addresses: Addr[]; zones:
         <p className="text-subheading font-bold">Add an address</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Label</span><input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} className={inputClass} maxLength={30} /></label>
-          <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Phone</span><input type="tel" name="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder="0803 123 4567" /></label>
+          <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Phone <span className="font-normal text-muted-foreground">({PHONE_HINT})</span></span><input type="tel" name="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputClass} placeholder="0803 123 4567" /></label>
         </div>
         <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Street address</span><input name="line1" value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} className={inputClass} /></label>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -206,7 +206,7 @@ export function ProfileForm({ name: n, phone: p }: { name: string; phone: string
   return (
     <form className="flex flex-col gap-4" onSubmit={(e) => { e.preventDefault(); start(async () => void toastResult(await updateProfile({ name, phone }))); }}>
       <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Name</span><input value={name} onChange={(e) => setName(e.target.value)} className={inputClass} /></label>
-      <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Phone</span><input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} placeholder="0803 123 4567" /></label>
+      <label className="flex flex-col gap-1.5"><span className="text-sm font-bold">Phone <span className="font-normal text-muted-foreground">({PHONE_HINT})</span></span><input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} placeholder="0803 123 4567" /></label>
       <button type="submit" disabled={pending} className={cn(pill, "w-fit bg-char text-cream")}>Save profile</button>
     </form>
   );

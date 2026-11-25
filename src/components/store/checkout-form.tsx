@@ -6,6 +6,7 @@ import { placeOrder, quoteCheckout, saveCheckoutContact, type QuoteView } from "
 import { track } from "@/lib/analytics";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { PHONE_HINT } from "@/lib/validation";
 
 type Zone = { id: number; name: string; areas: string; fee: string; eta: string };
 type Address = { id: number; label: string; line1: string; area: string; zoneId: number | null; phone: string };
@@ -119,7 +120,7 @@ export function CheckoutForm({
             />
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Phone (WhatsApp)" error={errors.phone}>
+            <Field label="Phone (WhatsApp)" error={errors.phone} hint={PHONE_HINT}>
               <input type="tel" autoComplete="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0803 123 4567" aria-invalid={!!errors.phone} className={field} name="phone" />
             </Field>
             <Field label="Full name" error={errors.name}>
@@ -216,7 +217,15 @@ export function CheckoutForm({
         </ul>
         <div className="flex gap-2">
           <label className="sr-only" htmlFor="code">Coupon or referral code</label>
-          <input id="code" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="Promo code" className="h-11 min-w-0 flex-1 rounded-lg border border-input px-3 uppercase" data-testid="code-input" />
+          <input
+            id="code"
+            value={code}
+            onChange={(e) => {
+              const v = e.target.value.toUpperCase();
+              setCode(v);
+              // Editing or clearing the box removes the previously applied code.
+              if (v.trim() !== appliedCode) setAppliedCode("");
+            }} placeholder="Promo code" className="h-11 min-w-0 flex-1 rounded-lg border border-input px-3 uppercase" data-testid="code-input" />
           <button type="button" onClick={() => setAppliedCode(code.trim())} className="h-11 rounded-full bg-char px-4 font-bold text-cream" data-testid="apply-code">
             Apply
           </button>

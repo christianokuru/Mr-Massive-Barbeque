@@ -48,6 +48,11 @@ describe("escaping and redirects", () => {
   it("normalises Nigerian phone numbers", () => {
     expect(normalizePhone("0803 123 4567")).toBe("+2348031234567");
     expect(normalizePhone("+234 803 123 4567")).toBe("+2348031234567");
+    expect(normalizePhone("+234 0909 599 5242")).toBe("+2349095995242");
+    expect(normalizePhone("2340803 123 4567")).toBe("+2348031234567");
+    expect(normalizePhone("00234 803 123 4567")).toBe("+2348031234567");
+    expect(normalizePhone("803 123 4567")).toBe("+2348031234567");
+    expect(normalizePhone("0803 123 456")).toBeNull();
     expect(normalizePhone("12345")).toBeNull();
   });
 });

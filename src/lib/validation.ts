@@ -9,34 +9,39 @@ export const emailSchema = z
   .max(254)
   .pipe(z.email({ message: "Enter a valid email address." }));
 
-/** Nigerian phone: accepts 0803..., +234803..., 234803... → +234803... */
+/** Nigerian phone: accepts 0803..., +234803..., 234803..., +2340803..., 00234... → +234803... */
 export function normalizePhone(raw: string): string | null {
-  const digits = raw.replace(/[^\d]/g, "");
+  let digits = raw.replace(/[^\d]/g, "");
+  if (digits.startsWith("00234")) digits = digits.slice(2);
   let local: string;
   if (digits.startsWith("234")) local = digits.slice(3);
-  else if (digits.startsWith("0")) local = digits.slice(1);
   else local = digits;
+  // People often keep the 0 after +234 (e.g. +234 0803…): drop it.
+  if (local.startsWith("0")) local = local.slice(1);
   if (!/^[789]\d{9}$/.test(local)) return null;
   return `+234${local}`;
 }
 
 /** Digits used for phone search: "0803 123" → "803123". */
 export function phoneSearchDigits(raw: string): string {
-  const digits = raw.replace(/[^\d]/g, "");
-  if (digits.startsWith("234")) return digits.slice(3);
-  if (digits.startsWith("0")) return digits.slice(1);
+  let digits = raw.replace(/[^\d]/g, "");
+  if (digits.startsWith("00234")) digits = digits.slice(2);
+  if (digits.startsWith("234")) digits = digits.slice(3);
+  if (digits.startsWith("0")) digits = digits.slice(1);
   return digits;
 }
+
+export const PHONE_HINT = "e.g. 0803 123 4567 or +234 803 123 4567";
 
 export const phoneSchema = z
   .string()
   .trim()
-  .min(7, "Enter a valid phone number.")
+  .min(7, "Enter your 11-digit phone number, like 0803 123 4567.")
   .max(20)
   .transform((v, ctx) => {
     const n = normalizePhone(v);
     if (!n) {
-      ctx.addIssue({ code: "custom", message: "Enter a valid Nigerian phone number." });
+      ctx.addIssue({ code: "custom", message: "Enter an 11-digit Nigerian number, like 0803 123 4567 or +234 803 123 4567." });
       return z.NEVER;
     }
     return n;
@@ -72,7 +77,9 @@ export function safeNext(next: string | null | undefined, fallback = "/account")
 
 /** WhatsApp numbers: digits only, international format, 10–15 digits. */
 export function normalizeWhatsapp(raw: string): string | null {
-  const digits = raw.replace(/[^\d]/g, "");
+  let digits = raw.replace(/[^\d]/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("2340")) digits = `234${digits.slice(4)}`;
   const intl = digits.startsWith("0") ? `234${digits.slice(1)}` : digits;
   return /^[1-9]\d{9,14}$/.test(intl) ? intl : null;
 }

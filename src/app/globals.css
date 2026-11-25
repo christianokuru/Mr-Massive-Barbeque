@@ -134,6 +134,10 @@
 
   --shadow-lift: var(--shadow-lift);
 
+  --container-page: 1200px;
+}
+
+@theme {
   /* Type scale (from the reference, Minor Third from 16px) */
   --text-caption: 12px;
   --text-caption--line-height: 1.33;
@@ -161,8 +165,38 @@
   --text-display--line-height: 0.88;
   --text-display-lg: 80px;
   --text-display-lg--line-height: 0.88;
+}
 
-  --container-page: 1200px;
+/*
+ * Phones (under 640px): compact text. Body copy 12px, small print 11px, buttons
+ * follow the body size. Big display headings already scale with the screen.
+ * Form fields stay 16px: anything smaller makes iPhones zoom in when you tap them.
+ */
+@media (max-width: 639px) {
+  :root {
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 12px;
+    --text-lg: 14px;
+    --text-xl: 16px;
+    --text-caption: 11px;
+    --text-body-sm: 12px;
+    --text-body: 12px;
+    --text-body-lg: 13px;
+    --text-subheading: 15px;
+    --text-heading-sm: 18px;
+  }
+  body {
+    font-size: 12px;
+  }
+  .eyebrow {
+    font-size: 11px;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 @layer base {

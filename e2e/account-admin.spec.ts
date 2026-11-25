@@ -76,7 +76,7 @@ test.describe("customer account", () => {
 test.describe("admin", () => {
   test.beforeEach(async ({ page }) => declineCookies(page));
 
-  test("admin lands on /admin and manages the store", async ({ page }) => {
+  test("admin lands on /admin and manages the store", async ({ page }, testInfo) => {
     // Fresh throwaway admin each run (never the real ADMIN_EMAIL).
     await sql`delete from "user" where email = ${E2E_ADMIN}`;
     await signUpVerified(page, E2E_ADMIN, PW, "Test Admin");
@@ -102,19 +102,32 @@ test.describe("admin", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
 
-    // Settings: invalid WhatsApp rejected, banner shows on storefront
-    await page.goto("/admin/settings");
-    await page.locator("input[name=whatsapp]").fill("123");
-    await page.getByTestId("save-settings").click();
-    await expect(page.getByTestId("settings-error")).toBeVisible();
-    const banner = `E2E banner ${Date.now()}`;
-    await page.locator("input[name=whatsapp]").fill("0803 123 4567");
-    await page.locator("input[name=bannerDesktop]").fill(banner);
-    await page.locator("input[name=bannerMobile]").fill(banner);
-    await page.getByTestId("save-settings").click();
-    await expect(page.getByText("Settings saved")).toBeVisible();
-    await page.goto("/");
-    await expect(page.getByTestId("announcement")).toContainText(banner);
+    // Settings: invalid WhatsApp rejected, banner shows on storefront.
+    // Desktop only: both projects editing the one settings row at once would race.
+    if (testInfo.project.name === "desktop") {
+      await page.goto("/admin/settings");
+      // The test DB is the real store: remember the owner's settings and put them back after.
+      const original = {
+        whatsapp: await page.locator("input[name=whatsapp]").inputValue(),
+        bannerDesktop: await page.locator("input[name=bannerDesktop]").inputValue(),
+        bannerMobile: await page.locator("input[name=bannerMobile]").inputValue(),
+      };
+      await page.locator("input[name=whatsapp]").fill("123");
+      await page.getByTestId("save-settings").click();
+      await expect(page.getByTestId("settings-error")).toBeVisible();
+      const banner = `E2E banner ${Date.now()}`;
+      await page.locator("input[name=whatsapp]").fill("0803 123 4567");
+      await page.locator("input[name=bannerDesktop]").fill(banner);
+      await page.locator("input[name=bannerMobile]").fill(banner);
+      await page.getByTestId("save-settings").click();
+      await expect(page.getByText("Settings saved")).toBeVisible();
+      await page.goto("/");
+      await expect(page.getByTestId("announcement")).toContainText(banner);
+      await page.goto("/admin/settings");
+      for (const [k, v] of Object.entries(original)) await page.locator(`input[name=${k}]`).fill(v);
+      await page.getByTestId("save-settings").click();
+      await expect(page.getByText("Settings saved")).toBeVisible();
+    }
 
     // Products: fake upload rejected
     await page.goto("/admin/products");

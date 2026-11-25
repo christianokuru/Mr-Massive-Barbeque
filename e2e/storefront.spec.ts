@@ -66,11 +66,18 @@ test.describe("storefront", () => {
 
     const email = e2eEmail("buyer");
     await page.fill("input[name=email]", email);
-    await page.fill("input[name=phone]", "08031234567");
+    // People often keep the 0 after +234: must be accepted
+    await page.fill("input[name=phone]", "+234 0803 123 4567");
     await page.fill("input[name=name]", "E2E Buyer");
     await page.getByTestId("zone-select").selectOption({ index: 1 });
     await page.fill("input[name=address]", "12 Admiralty Way");
     await page.fill("input[name=area]", "Lekki Phase 1");
+    // A wrong code, then cleared, must not block checkout
+    await page.getByTestId("code-input").fill("NOTAREALCODE");
+    await page.getByTestId("apply-code").click();
+    await expect(page.getByText("That code isn't valid.")).toBeVisible();
+    await page.getByTestId("code-input").fill("");
+    await expect(page.getByText("That code isn't valid.")).toBeHidden();
     await page.getByTestId("code-input").fill("WELCOME10");
     await page.getByTestId("apply-code").click();
     await expect(page.getByTestId("discount")).toContainText("-₦");
