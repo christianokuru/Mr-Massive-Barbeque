@@ -81,7 +81,17 @@ export function Header() {
         <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Massive Barbeque home">
           <Image src="/brand/logo.png" alt="Massive Barbeque" width={467} height={530} priority className="h-11 w-auto md:h-14" />
         </Link>
-        <NavLinks nav={NAV} />
+        <Suspense
+          fallback={
+            <nav aria-label="Main" className="ml-6 hidden items-center gap-1 lg:flex">
+              {NAV.map((n) => (
+                <Link key={n.href} href={n.href} className="rounded-full px-3 py-2 text-sm font-bold tracking-[0.05em] uppercase">{n.label}</Link>
+              ))}
+            </nav>
+          }
+        >
+          <NavLinks nav={NAV} />
+        </Suspense>
         <div className="ml-auto flex items-center gap-0.5">
           <Link href="/menu?focus=search" className={iconBtn} aria-label="Search the menu">
             <Search className="size-5" />
