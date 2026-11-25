@@ -15,5 +15,6 @@ Read `ARCHITECTURE.md` first. It is the approved architecture.
 - shadcn = Base UI (`render` prop, no `asChild`). Buttons are pills. Use `useConfirm()`, never `window.confirm()`.
 - No stray exports from `"use server"` files. `server-only` on server modules.
 - Before every push: `npm run typecheck && npm run lint && npm run build` pass.
+- Tests and local work use the Neon **dev** branch only (`TEST_DATABASE_URL`, enforced by `test-db.ts`). Never run tests or scripts against the live **main** branch.
 - Never `--legacy-peer-deps`. Never commit `.env*` (except `.env.example`) or personal emails.
 - Push to `main` after each phase. Remind the owner to `git checkout -- package-lock.json && git pull && npm install` when `package.json` changes.

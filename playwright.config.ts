@@ -1,8 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { existsSync } from "node:fs";
-import { config } from "dotenv";
 
-config({ path: ".env.local", quiet: true });
+import "./test-db";
 
 /** Must match BETTER_AUTH_URL's port (auth checks the origin). */
 const PORT = 3000;
@@ -35,16 +34,16 @@ export default defineConfig({
     {
       command: `npm run start -- -p ${PORT}`,
       port: PORT,
-      reuseExistingServer: true,
+      reuseExistingServer: false,
       timeout: 120_000,
-      env: { ADMIN_EMAIL: E2E_ADMIN },
+      env: { ADMIN_EMAIL: E2E_ADMIN, DATABASE_URL: process.env.DATABASE_URL! },
     },
     {
       command: `npm run start -- -p ${NOPAY_PORT}`,
       port: NOPAY_PORT,
-      reuseExistingServer: true,
+      reuseExistingServer: false,
       timeout: 120_000,
-      env: { PAYSTACK_SECRET_KEY: "", ADMIN_EMAIL: E2E_ADMIN },
+      env: { PAYSTACK_SECRET_KEY: "", ADMIN_EMAIL: E2E_ADMIN, DATABASE_URL: process.env.DATABASE_URL! },
     },
   ],
 });

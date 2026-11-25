@@ -1,7 +1,6 @@
 import { neon } from "@neondatabase/serverless";
-import { config } from "dotenv";
 
-config({ path: ".env.local", quiet: true });
+import "../test-db";
 
 const E2E = "e2e-%@example.com";
 

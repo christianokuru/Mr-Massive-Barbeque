@@ -1,8 +1,7 @@
 import { fileURLToPath } from "node:url";
-import { config } from "dotenv";
 import { defineConfig } from "vitest/config";
 
-config({ path: ".env.local", quiet: true });
+import "./test-db";
 
 export default defineConfig({
   resolve: {
