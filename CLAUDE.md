@@ -2,7 +2,7 @@
 
 # Massive Barbeque · working rules
 
-Read `ARCHITECTURE.md` first. It is the approved architecture.
+Read `HANDOVER.md` first (current state, decisions, to-dos), then `ARCHITECTURE.md` (the approved architecture).
 
 ## Precedence
 1. Owner's latest instruction. 2. `ARCHITECTURE.md` + this file. 3. Kylva master prompt. 4. `node_modules/next/dist/docs/` for framework APIs.

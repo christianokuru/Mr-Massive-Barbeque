@@ -101,7 +101,8 @@ Money = integer **kobo**. All timestamps `timestamptz`; displayed in `Africa/Lag
 - `favourite` (user_id, product_id) · `address` (user_id, label, line, area, zone_id, phone, default)
 - `subscriber` (email unique, source, marketing_opt_in, welcome_coupon_id) · `stock_alert` (email, variant_id) unique
 - `quiz_result` (id, user_id null, email, answers json, recommendations, created_at)
-- `push_subscription` (user_id, endpoint unique, keys, created_at)
+- `push_subscription` (user_id, endpoint unique, keys, created_at): admin devices
+- `order_push` (order_id, endpoint, keys) unique(order_id, endpoint): customer alerts for one order (guests too); deleted when the order finishes
 - `store_settings` (singleton: whatsapp_number, banner_desktop, banner_mobile)
 - `throttle` (key, count, window_start): app rate limits
 
@@ -117,6 +118,10 @@ DB check constraints: price > 0, stock ≥ 0, qty ranges, rating 1–5, reminder
 
 **Images.** `requireAdmin` → sharp reads real pixels (JPG/PNG/WebP/AVIF, ≥ 400px, ≤ 4 MB) → strip EXIF/GPS → resize ≤ 1800px → WebP → random key `products/<uuid>.webp` → `Cache-Control: public, max-age=31536000, immutable`. Stored URLs must start with `NEXT_PUBLIC_MEDIA_URL`.
 
+**Live order status.** Open order pages (account, `/track`, `/checkout/complete`) poll `GET /api/orders/[number]/status`: every 10s when confirmed / out for delivery, 30s while preparing, never when finished, unpaid, hidden or > 4h old. Response is `{ status, v }`; the page calls `router.refresh()` only when `v` changes. Access: signed-in owner, or the order email (same proof as `/track`).
+
+**Phone alerts.** Admin: new paid order + payment problems (`pushToAdmin`). Customer: opt-in per order (`order_push`), sent from `changeOrderStatus` after commit; removed after the final status. Service worker shows them with `tag = order-<number>` + `renotify`.
+
 **Cron (Vercel, daily, `Authorization: Bearer CRON_SECRET`).** Expire unpaid orders (return stock), abandoned-bag emails (max 2), craving reminders, back-on-the-grill alerts, prune `throttle`.
 
 ## APIs (route handlers; everything else is server actions)
@@ -128,7 +133,9 @@ DB check constraints: price > 0, stock ≥ 0, qty ranges, rating 1–5, reminder
 | `GET /api/checkout/verify?reference=` | Return page verification (server-to-server) |
 | `GET /api/cron/daily` | Daily jobs (bearer secret) |
 | `POST /api/admin/upload` | Image upload (admin) |
-| `POST/DELETE /api/admin/push` | Save/remove admin push subscription |
+| `POST/DELETE/PUT /api/admin/push` | Save/remove admin push subscription, send test |
+| `GET /api/orders/[number]/status` | Live order status (owner session or `?email=`) |
+| `GET/POST/DELETE /api/orders/[number]/push` | Customer alerts for one order (owner session or email; rate limited; active orders only) |
 | `GET /api/admin/orders.csv`, `/api/admin/subscribers.csv` | CSV exports (formula-neutralised) |
 | `GET /account/export` | Customer's own data (JSON) |
 
@@ -140,7 +147,7 @@ DB check constraints: price > 0, stock ≥ 0, qty ranges, rating 1–5, reminder
 - Coupons once per email; referral first order only, never self; personal reward coupons bound to email.
 - Escape LIKE wildcards; JSON-LD `<` escaped; CSV formula injection neutralised; `ON CONFLICT DO NOTHING` for concurrent inserts.
 - Headers: CSP (`frame-ancestors 'none'`, `object-src 'none'`, allow Paystack/analytics/storage hosts), HSTS + `upgrade-insecure-requests` only on https, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, no `x-powered-by`.
-- Push: only the admin saves subscriptions; endpoints must be https on FCM / Mozilla / Apple / Windows push hosts (SSRF guard); send only to the `ADMIN_EMAIL` user's devices; drop 404/410; SW opens same-origin URLs only.
+- Push: only the admin saves `push_subscription` rows; customers only `order_push` for an order they can prove access to; endpoints must be https on FCM / Mozilla / Apple / Windows push hosts (SSRF guard); admin alerts go only to the `ADMIN_EMAIL` user's devices; drop 404/410; SW opens same-origin URLs only.
 - NDPA/GDPR: marketing opt-in, data export, account deletion with password (orders kept, `user_id` nulled).
 - Secrets only in env vars; `.env*` ignored except `.env.example`.
 
@@ -156,6 +163,9 @@ Per-page metadata + canonical, OG/Twitter, generated OG image, `metadataBase`. J
 
 ## Tests
 
-- **Vitest (real DB, 24 tests):** concurrent stock reservation (no oversell), expiry returns stock, idempotent settlement + timeline event, amount/currency mismatch, failed payment, late payment (accepted / flagged), duplicate payment, coupon once-per-email + max uses + release on expiry, referral (self blocked, rewarded once, first order only), server-side delivery/free-delivery, upload validation (fake/small rejected, EXIF stripped, WebP, immutable), push SSRF allowlist + admin-only delivery + 410 pruning, running-low/review prompts scoping (guest orders with same email included, others never), CSV/LIKE/JSON-LD escaping, safe `next`, phone normalisation.
-- **Playwright (31 tests, mobile + desktop):** 390px no horizontal scroll, search/filters/empty states, mobile menu, bag (triple-tap, combo, qty), checkout validation, WELCOME10, Paystack redirect, no-keys graceful failure (order cancelled, stock returned, checked in DB), track order, newsletter, quiz, consent gating, customer flow (weak password, verification, favourites, addresses, rewards, marketing toggle, export, delete with wrong/right password), admin (lands on /admin, range, phone search, CSV, settings validation + banner on storefront, fake upload rejected), security probes (webhook/cron 401, admin 404, account redirect, open redirect, real 404s, headers).
+All tests run on the Neon **dev** branch only (`TEST_DATABASE_URL`, enforced by `test-db.ts`); `e2e/teardown.ts` returns stock and coupon uses and deletes `e2e-*` data after each run.
+
+
+- **Vitest (real DB, 27 tests):** customer phone alerts per status + clean-up, referral reward spending, welcome/expired/inactive codes, concurrent stock reservation (no oversell), expiry returns stock, idempotent settlement + timeline event, amount/currency mismatch, failed payment, late payment (accepted / flagged), duplicate payment, coupon once-per-email + max uses + release on expiry, referral (self blocked, rewarded once, first order only), server-side delivery/free-delivery, upload validation (fake/small rejected, EXIF stripped, WebP, immutable), push SSRF allowlist + admin-only delivery + 410 pruning, running-low/review prompts scoping (guest orders with same email included, others never), CSV/LIKE/JSON-LD escaping, safe `next`, phone normalisation.
+- **Playwright (36 tests, mobile + desktop):** live order status without refresh + status/push access checks, Paystack return with repeated reference, signed-in complete page, 390px no horizontal scroll, search/filters/empty states, mobile menu, bag (triple-tap, combo, qty), checkout validation, WELCOME10, Paystack redirect, no-keys graceful failure (order cancelled, stock returned, checked in DB), track order, newsletter, quiz, consent gating, customer flow (weak password, verification, favourites, addresses, rewards, marketing toggle, export, delete with wrong/right password), admin (lands on /admin, range, phone search, CSV, settings validation + banner on storefront, fake upload rejected), security probes (webhook/cron 401, admin 404, account redirect, open redirect, real 404s, headers).
 - Dev-mode crawl of store, account and admin shows no Next.js instant-navigation insights.
