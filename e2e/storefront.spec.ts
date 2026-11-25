@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { declineCookies, e2eEmail, noHorizontalScroll, resetRateLimits, sql } from "./utils";
+import { declineCookies, e2eEmail, noHorizontalScroll, resetRateLimits, sql, uid } from "./utils";
 
 test.beforeAll(resetRateLimits);
 
@@ -141,4 +141,21 @@ test("consent gates analytics", async ({ page }) => {
   await expect(page.getByTestId("consent-banner")).toBeHidden();
   await page.getByRole("button", { name: "Cookie settings" }).click();
   await expect(page.getByTestId("consent-banner")).toBeVisible();
+});
+
+test("return from Paystack shows success even with the reference repeated in the URL", async ({ page }) => {
+  await declineCookies(page);
+  const email = e2eEmail("paid");
+  const number = `MB-E2E-${uid()}`;
+  const ref = `${number}-REF`;
+  const [o] = await sql`insert into "order" (number, email, phone, name, method, status, subtotal_kobo, total_kobo, payment_expires_at, paid_at)
+    values (${number}, ${email}, '+2348031234567', 'Ada Paid', 'pickup', 'confirmed', 1200000, 1200000, now() + interval '1 hour', now()) returning id`;
+  await sql`insert into payment (order_id, reference, amount_kobo, status) values (${o.id}, ${ref}, 1200000, 'success')`;
+  try {
+    // Paystack adds ?trxref=…&reference=… on top of our own ?reference=…
+    await page.goto(`/checkout/complete?reference=${ref}&trxref=${ref}&reference=${ref}`);
+    await expect(page.getByRole("heading", { name: /on the grill, Ada/ })).toBeVisible();
+  } finally {
+    await sql`delete from "order" where id = ${o.id}`;
+  }
 });

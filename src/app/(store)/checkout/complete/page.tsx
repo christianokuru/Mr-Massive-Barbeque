@@ -19,8 +19,10 @@ export const metadata: Metadata = { title: "Order status", robots: { index: fals
 async function Result({ searchParams }: { searchParams: PageProps<"/checkout/complete">["searchParams"] }) {
   const sp = await searchParams;
   await connection();
-  // Only OUR reference is used; Paystack's redirect params (status, trxref…) are ignored.
-  const reference = typeof sp.reference === "string" ? sp.reference.slice(0, 100) : "";
+  // Paystack appends its own `reference` to our callback URL, so it can arrive twice (as an array).
+  // It's only used to look up our own payment row, which is then verified server-side with Paystack.
+  const raw = Array.isArray(sp.reference) ? sp.reference[0] : sp.reference;
+  const reference = typeof raw === "string" ? raw.slice(0, 100) : "";
   const [pay] = reference ? await db.select().from(s.payment).where(eq(s.payment.reference, reference)) : [];
   if (!pay) {
     return (
