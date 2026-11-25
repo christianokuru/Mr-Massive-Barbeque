@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   BadgePercent,
+  BookOpen,
   Boxes,
   ExternalLink,
   LayoutDashboard,
@@ -37,6 +38,7 @@ const NAV = [
   { href: "/admin/shipping", label: "Delivery zones", icon: Truck, badge: null },
   { href: "/admin/subscribers", label: "Subscribers", icon: Mail, badge: null },
   { href: "/admin/settings", label: "Settings", icon: Settings, badge: null },
+  { href: "/admin/guide", label: "Guide", icon: BookOpen, badge: null },
 ];
 
 type Badges = { toShip: number; reviews: number };
